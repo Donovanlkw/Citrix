@@ -6,6 +6,27 @@ $destination1="FQND.NS.CTX.com"
 $Dnsserver|foreach-object{   
 Resolve-DnsName -Name $destination1 -Server $_ 
 } 
-
+##########################################################
 
 Powercfg /systempowerreport
+
+##########################################################
+#----- get the event from application log. 
+$LogName="Application" 
+$FileName="Application" 
+$GE2=Get-WinEvent   -ComputerName $hostname -FilterHashtable @{LogName=$LogName;Level='2';StartTime=$StartTime;EndTime=$EndTime}  -MaxEvents  100 
+$GE2 | export-csv "$hostname-$FileName-2.csv" 
+$GE3=Get-WinEvent   -ComputerName $hostname -FilterHashtable @{LogName=$LogName;Level='3';StartTime=$StartTime;EndTime=$EndTime}  -MaxEvents  100 
+$GE3 | export-csv "$hostname-$FileName-3.csv"  
+
+##########################################################
+#----- Get the RDS Logon in last 7 days-----#    
+
+$StartTime=(Get-date).AddDays(-7)   
+$EndTime= Get-date   
+$LogName="Security"   
+$eventid="4624"  
+$hostname=$env:computername  
+ 
+$Winevent=Get-WinEvent -ComputerName $hostname -FilterHashTable @{LogName=$LogName;ID=$eventid;StartTime=$StartTime;EndTime=$EndTime}   
+
