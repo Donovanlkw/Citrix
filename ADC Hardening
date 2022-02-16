@@ -1,0 +1,6 @@
+https://support.citrix.com/article/CTX219638 
+
+add ns acl MGNTACL1 ALLOW -srcIP = 192.168.1.72 -destIP = 192.168.1.99 -priority 5 -kernelstate SFAPPLIED61 
+add ns acl MGNTACL2 DENY -destIP = 192.168.1.72 -destPort = 80 -protocol TCP -priority 7 -kernelstate SFAPPLIED61 
+
+
