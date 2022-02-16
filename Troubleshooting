@@ -6,3 +6,6 @@ $destination1="FQND.NS.CTX.com"
 $Dnsserver|foreach-object{   
 Resolve-DnsName -Name $destination1 -Server $_ 
 } 
+
+
+Powercfg /systempowerreport
