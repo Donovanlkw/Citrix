@@ -1,0 +1,26 @@
+$ComputerName = "123`r`n456`r`n789"
+$computerName |out-file serverlist.txt
+
+$parameters = @{
+  ComputerName = Get-Content serverlist.txt
+  ScriptBlock = {Get-BrokerMachine -OSType "Windows 10" -filter {IsAssigned -eq $true} -MaxRecordCount 10000|measure-object  }
+}
+Invoke-Command @parameters |export-csv "Uniq VDI users.txt"
+
+$parameters = @{
+  ComputerName = Get-Content serverlist.txt
+  ScriptBlock = {Get-BrokerMachine -OSType "Windows 10"   -MaxRecordCount 10000|measure-object  }
+}
+Invoke-Command @parameters |export-csv "VDI registered.txt" 
+
+$parameters = @{
+  ComputerName = Get-Content serverlist.txt
+  ScriptBlock = {Get-brokersession -MaxRecordCount 10000|measure-object  }
+}
+Invoke-Command @parameters  |export-csv allsession.txt 
+
+$parameters = @{
+  ComputerName = Get-Content serverlist.txt
+  ScriptBlock = {Get-brokersession -filter {(connectedViaIP -like "1.1.1.1")} -MaxRecordCount 10000|measure-object  }
+}
+Invoke-Command @parameters |export-csv NSsession.txt
