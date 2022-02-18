@@ -21,3 +21,16 @@ $Events =$winevent | ?{$_.Message -match 'logon type:\s+(10)\s'}| ForEach-Object
 
 $Events | Format-Table -AutoSize
 
+
+##########################################################
+#----- get the event from application log. 
+$LogName="Application" 
+$FileName="Application" 
+$GE2=Get-WinEvent   -ComputerName $hostname -FilterHashtable @{LogName=$LogName;Level='2';StartTime=$StartTime;EndTime=$EndTime}  -MaxEvents  100 
+$GE2 | export-csv "$hostname-$FileName-2.csv" 
+$GE3=Get-WinEvent   -ComputerName $hostname -FilterHashtable @{LogName=$LogName;Level='3';StartTime=$StartTime;EndTime=$EndTime}  -MaxEvents  100 
+$GE3 | export-csv "$hostname-$FileName-3.csv"  
+
+$Winevent=Get-WinEvent -ComputerName $hostname -FilterHashTable @{LogName=$LogName;ID=$eventid;StartTime=$StartTime;EndTime=$EndTime}   
+
+
