@@ -1,6 +1,3 @@
-
-
-
 #----- Execute a command -----#  
 Start-Process -path 'C:\Program Files (x86)\Google\Chrome\ Application\chrome.exe'
 
@@ -78,16 +75,11 @@ Set-Acl -Path $_ -AclObject $NewAcl
 }
 
 
-
-
 ############## Credential ##############
 #$adminCredential = Get-AutomationPSCredential -Name 'AdminUser'
 #$adminuserName = $adminCredential.UserName
 #$adminsecurePassword = $adminCredential.Password
 #$adminpassword = $adminCredential.GetNetworkCredential().Password
-
-
-
 
 #----- Create a schedule Task in Admin. Tools.
 $file = "c:\temp\$task.ps1"
@@ -123,18 +115,6 @@ $hostname="vwts19bk-easd12"
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 #----- Ojbect Handling -----#
 Compare-Object -ReferenceObject $(Get-Content C:\test\testfile1.txt) -DifferenceObject $(Get-Content C:\test\testfile2.txt)				
 
@@ -145,8 +125,6 @@ Get-ChildItem -path c:\tmp–Recurse| Measure-Object -Property length -Minimum -
 
 #----- Read the content of file
 Get-Content -Path $file| Format-Table -AutoSize
-
-
 
 
 #----- Get the RDS Logon in last 7 days-----# 
@@ -308,28 +286,5 @@ set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies
 secedit /configure /db C:\Windows\security\local.sdb /areas USER_RIGHTS /cfg  c:\temp\secpolfinal.inf
 #>
 
-
-#----- Get the RDS Logon in last 7 days-----# 
-$StartTime=(Get-date).AddDays(-7)
-$EndTime= Get-date
-$LogName="Security"
-$eventid="4624"
-$hostname=$env:computername
-
-
-$Winevent=Get-WinEvent -ComputerName $hostname -FilterHashTable @{LogName=$LogName;ID=$eventid;StartTime=$StartTime;EndTime=$EndTime} 
-$Events =$winevent | ?{$_.Message -match 'logon type:\s+(10)\s'}| ForEach-Object {
-    $Values = $_.Properties | ForEach-Object { $_.Value }
-    
-    # return a new object with the required information
-    [PSCustomObject]@{
-        Time      = $_.TimeCreated
-        # index 0 contains the name of the update
-        Event     = $Values[0]
-	UserID	= $Values[5]
-    }
-}
-
-$Events | Format-Table -AutoSize
 
 
