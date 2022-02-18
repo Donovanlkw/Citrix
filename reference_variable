@@ -5,6 +5,12 @@ $env:userdnsdomain
 $Env:COMPUTERNAME 
 $FQNDServerName= [System.Net.Dns]::GetHostByName($env:computerName).HostName 
 
+#----- common command
+get-command  -Verb get -noun AD*Service*
+Import-module 
+Get-help * 
+Get-history
+
 
 #----- Sample
 
@@ -15,57 +21,31 @@ $resumeActionscript = "-WindowStyle Normal -NoLogo -NoProfile -File $file"
 $act = New-ScheduledTaskAction -Execute "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" -Argument $resumeActionscript  
 $trig = New-ScheduledTaskTrigger -AtStartup  
 Register-ScheduledTask -TaskName $task -user $user -password $pwd -Action $act -Trigger $trig -RunLevel Highest  
-
-
   
 
 $Events =$winevent | ?{$_.Message -match 'logon type:\s+(10)\s'}| ForEach-Object {  
-
     $Values = $_.Properties | ForEach-Object { $_.Value }  
-
-    
-
     # return a new object with the required information   
 
     [PSCustomObject]@{  
-
         Time      = $_.TimeCreated  
-
         # index 0 contains the name of the update  
-
         Event     = $Values[0]  
-
        UserID = $Values[5] 
-
     }  
-
 }  
 
 $Events | Format-Table -AutoSize  
-
-   
-
- 
-
  
 
 #----- Create a auto run RDS Configuration  
 
 Get-ScheduledTask   
-
 $resumeActionscript = "-WindowStyle Normal -NoLogo -NoProfile -File $file"   
-
 $act = New-ScheduledTaskAction -Execute "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" -Argument $resumeActionscript   
-
 $trig = New-ScheduledTaskTrigger -AtStartup   
-
 Register-ScheduledTask -TaskName $task -user $user -password $pwd -Action $act -Trigger $trig -RunLevel Highest  
 
- 
-
- 
-
-  
 
 ### create a local file for schedule task   
 
