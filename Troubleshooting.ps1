@@ -1,3 +1,5 @@
+#################################################
+###=============== DNS enquiry ===============###
 $DNSserverIP1= "8.8.8.8"
 
 $dnsserver= $DNSserverIP1, $DNSserverIP2
@@ -6,17 +8,15 @@ $destination1="FQND.NS.CTX.com"
 $Dnsserver|foreach-object{   
 Resolve-DnsName -Name $destination1 -Server $_ 
 } 
-##########################################################
 
+#################################################
+###=============== DNS enquiry ===============###
 Powercfg /systempowerreport
 
-
-# ----- Networking
+#################################################
+###=============== Network tracing ===========###
 netsh trace start capture=yes
 netsh trace stop
-
-
-#----- Troubleshooting
 Test-NetConnection -ComputerName "Hostname or IP"
 Test-NetConnection "Hostname" -Port #
 Test-NetConnection "Hostname" -traceroute
@@ -27,11 +27,18 @@ Get-DnsClient
 Set-DnsClientServer Address
 Clear-DnsClientCache
 
+
+
+#################################################
+###=============== Remote command ============###
 Invoke-Command -ComputerName -ScriptBlock {ipconfig /release}
 Invoke-Command -ComputerName -ScriptBlock {ipconfig /renew}
+
+
+#################################################
+###=============== NIC control ===============###
 Disable-NetAdapter -Name "Adapter Name"
 Enable-NetAdapter -Name "Adapter Name"
-
 
 
 # ----- Query local security policy 
@@ -62,8 +69,8 @@ Get-Permissions -folder "C:\tmp"
 (get-acl "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server 2016 Redist").access
 
 
-#----- SQL Troubleshooting
-
+#################################################
+###============SQL Troubleshooting============###
 SELECT 'TCP Port' as tcpPort, value_name, value_data 
 FROM sys.dm_server_registry 
 WHERE registry_key LIKE '%IPALL' AND value_name in ('TcpPort','TcpDynamicPorts')
@@ -100,8 +107,6 @@ type c:secpolori.inf |Out-File -FilePath  $file -append -Encoding ascii
 #----- Enquiry Volume information
 get-volume  |Out-File -FilePath  $file -append -Encoding ascii
 
-
-
 #----- Enquiry Auto start Windows service.
 get-service | select DisplayName, ServiceName, StartType,Status  |findstr Automatic  |Out-File -FilePath  $file -append -Encoding ascii
 
@@ -111,15 +116,6 @@ get-service -displayname "SQL*"  | select DisplayName, ServiceName, StartType,St
 #----- Enquiry particular Windows service details.
 Get-WMIObject -Class Win32_Service -Filter  "Name='MSSQLSERVER'" |   Select-Object Name, DisplayName, StartMode, Status, StartName  |Out-File -FilePath  $file -append -Encoding ascii
 
-
 Get-NetAdapter  |Out-File -FilePath  $file -append -Encoding ascii
-
-
-
 Get-CimInstance Win32_OperatingSystem | Select-Object  Caption, InstallDate, ServicePackMajorVersion, OSArchitecture, BootDevice,  BuildNumber, CSName | FL
-
-
-
-
-
 
