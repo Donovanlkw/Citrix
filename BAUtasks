@@ -1,7 +1,12 @@
 #Get the SecureICA configuration 
 
 
+####################################################################
+### Get the enabled application in enabled DG ###
 
+Get-BrokerDesktopGroup -filter {Enabled -eq "True"}  | ForEach-Object {
+Get-BrokerApplication -AssociatedDesktopGroupUUID $_.UUID.guid -filter {Enabled -eq "True"}  
+     } |     Select-Object name, UserFilterEnabled, @{l="AssociatedUserNames";e={$_.AssociatedUserNames -join ","}} |export-csv EnabledApplication.csv 
 
 ####################################################################
 
