@@ -1,16 +1,10 @@
-#Get the SecureICA configuration 
-
-
-
-
-
-
 ####################################################################
 ### Get the enabled application in enabled DG ###
 
-Get-BrokerDesktopGroup -filter {Enabled -eq "True"}  | ForEach-Object {
+Get-BrokerDesktopGroup -filter {InMaintenanceMode -eq "False"}  | ForEach-Object {
 Get-BrokerApplication -AllAssociatedDesktopGroupUUID $_.UUID.guid -filter {Enabled -eq "True"}  
-     } |     Select-Object name, UserFilterEnabled, @{l="AssociatedUserNames";e={$_.AssociatedUserNames -join ","}} |export-csv EnabledApplication.csv 
+     } |     Select-Object name, UserFilterEnabled, @{l="AssociatedUserNames";e={$_.AssociatedUserNames -join ","}} |export-csv "$env:computername.csv"
+
 
 
 $ComputerName="localhost"
@@ -54,3 +48,8 @@ Invoke-Command -Computer $computer -ScriptBlock {
  
 #Consolidate all the Inventory files.
 Get-ChildItem -include azaw* -Recurse |get-content|Out-File StudioInventory -NoClobber
+
+
+####################################################################
+
+#Get the SecureICA configuration 
