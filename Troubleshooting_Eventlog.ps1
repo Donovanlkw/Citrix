@@ -21,7 +21,6 @@ $Events =$winevent | ?{$_.Message -match 'logon type:\s+(10)\s'}| ForEach-Object
 
 $Events | Format-Table -AutoSize
 
-
 ##########################################################
 #----- get the event from application log. 
 $LogName="Application" 
