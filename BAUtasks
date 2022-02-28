@@ -17,7 +17,7 @@ $computerName|out-file "serverlist.txt"
 $parameters = @{
   ComputerName = Get-Content "serverlist.txt"
   ScriptBlock = {Get-BrokerDesktopGroup -filter {Enabled -eq "True"}  | ForEach-Object {
-Get-BrokerApplication -AssociatedDesktopGroupUUID $_.UUID.guid -filter {Enabled -eq "True"}  
+Get-BrokerApplication -AllAssociatedDesktopGroupUUID $_.UUID.guid -filter {Enabled -eq "True"}  
      } 
   }
 }
