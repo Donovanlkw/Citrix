@@ -1,0 +1,4 @@
+#get Installed software 
+
+$ComputerName = "localhost"
+Get-CimInstance -ComputerName $ComputerName -Class Win32_Product |select name, version, PSComputerName |format-table -AutoSize| out-file software.csv -Append
