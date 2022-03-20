@@ -1,0 +1,77 @@
+Get-BrokerAccessPolicyRule  -MaxRecordCount 100000  |Out-File BrokerAccessPolicyRule.txt
+Get-BrokerAdminFolder  -MaxRecordCount 100000  |Out-File BrokerAdminFolder.txt
+Get-BrokerAppAssignmentPolicyRule  -MaxRecordCount 100000  |Out-File BrokerAppAssignmentPolicyRule.txt
+Get-BrokerAppEntitlementPolicyRule  -MaxRecordCount 100000  |Out-File BrokerAppEntitlementPolicyRule.txt
+Get-BrokerApplication  -MaxRecordCount 100000  |Out-File BrokerApplication.txt
+Get-BrokerApplicationGroup  -MaxRecordCount 100000  |Out-File BrokerApplicationGroup.txt
+Get-BrokerApplicationInstance  -MaxRecordCount 100000  |Out-File BrokerApplicationInstance.txt
+Get-BrokerAssignmentPolicyRule  -MaxRecordCount 100000  |Out-File BrokerAssignmentPolicyRule.txt
+#Get-BrokerAutoTagRule  -MaxRecordCount 100000  |Out-File BrokerAutoTagRule.txt
+Get-BrokerCatalog  -MaxRecordCount 100000  |Out-File BrokerCatalog.txt
+Get-BrokerConfigurationSlot  -MaxRecordCount 100000  |Out-File BrokerConfigurationSlot.txt
+Get-BrokerConfiguredFTA  -MaxRecordCount 100000  |Out-File BrokerConfiguredFTA.txt
+Get-BrokerConnectionLog  -MaxRecordCount 100000  |Out-File BrokerConnectionLog.txt
+Get-BrokerController  -MaxRecordCount 100000  |Out-File BrokerController.txt
+Get-BrokerDBConnection   |Out-File BrokerDBConnection.txt
+#Get-BrokerDBSchema    |Out-File BrokerDBSchema.txt
+#Get-BrokerDBVersionChangeScript   |Out-File BrokerDBVersionChangeScript.txt
+
+
+
+
+Get-BrokerDelayedHostingPowerAction  -MaxRecordCount 100000  |Out-File BrokerDelayedHostingPowerAction.txt
+Get-BrokerDesktop  -MaxRecordCount 100000  |Out-File BrokerDesktop.txt
+Get-BrokerDesktopGroup  -MaxRecordCount 100000  |Out-File BrokerDesktopGroup.txt
+#Get-BrokerDesktopGroupAnalysisReport   |Out-File BrokerDesktopGroupAnalysisReport.txt
+Get-BrokerDesktopGroupAppDisk  -MaxRecordCount 100000  |Out-File BrokerDesktopGroupAppDisk.txt
+#Get-BrokerDesktopGroupWebhook  |Out-File BrokerDesktopGroupWebhook.txt
+Get-BrokerDesktopUsage  -MaxRecordCount 100000  |Out-File BrokerDesktopUsage.txt
+Get-BrokerEntitlementPolicyRule  -MaxRecordCount 100000  |Out-File BrokerEntitlementPolicyRule.txt
+#Get-BrokerGpoBlob  |Out-File BrokerGpoBlob.txt
+#Get-BrokerGpoFilter  |Out-File BrokerGpoFilter.txt
+#Get-BrokerGpoPolicy  |Out-File BrokerGpoPolicy.txt
+#Get-BrokerGpoSetting  -MaxRecordCount 100000  |Out-File BrokerGpoSetting.txt
+Get-BrokerHostingPowerAction  -MaxRecordCount 100000  |Out-File BrokerHostingPowerAction.txt
+Get-BrokerHypervisorAlert  -MaxRecordCount 100000  |Out-File BrokerHypervisorAlert.txt
+Get-BrokerHypervisorConnection  -MaxRecordCount 100000  |Out-File BrokerHypervisorConnection.txt
+#Get-BrokerHypervisorConnectionStatus  -MaxRecordCount 100000  |Out-File BrokerHypervisorConnectionStatus.txt
+Get-BrokerIcon  -MaxRecordCount 100000  |Out-File BrokerIcon.txt
+Get-BrokerImportedFTA  -MaxRecordCount 100000  |Out-File BrokerImportedFTA.txt
+Get-BrokerInstalledDbVersion   |Out-File BrokerInstalledDbVersion.txt
+
+#Get-BrokerLease    |Out-File BrokerLease.txt
+Get-BrokerMachine  -MaxRecordCount 100000  |Out-File BrokerMachine.txt
+Get-BrokerMachineCommand  -MaxRecordCount 100000  |Out-File BrokerMachineCommand.txt
+Get-BrokerMachineConfiguration  -MaxRecordCount 100000  |Out-File BrokerMachineConfiguration.txt
+#Get-BrokerMachineStartMenuShortcutIcon    |Out-File BrokerMachineStartMenuShortcutIcon.txt
+#Get-BrokerMachineStartMenuShortcuts     |Out-File BrokerMachineStartMenuShortcuts.txt
+#Get-BrokerMachineStatus  -MaxRecordCount 100000  |Out-File BrokerMachineStatus.txt
+Get-BrokerPowerTimeScheme  -MaxRecordCount 100000  |Out-File BrokerPowerTimeScheme.txt
+Get-BrokerPrivateDesktop  -MaxRecordCount 100000  |Out-File BrokerPrivateDesktop.txt
+Get-BrokerRebootCycle  -MaxRecordCount 100000  |Out-File BrokerRebootCycle.txt
+Get-BrokerRebootSchedule  -MaxRecordCount 100000  |Out-File BrokerRebootSchedule.txt
+Get-BrokerRebootScheduleV2  -MaxRecordCount 100000  |Out-File BrokerRebootScheduleV2.txt
+Get-BrokerRemotePCAccount  -MaxRecordCount 100000  |Out-File BrokerRemotePCAccount.txt
+#Get-BrokerResource   |Out-File BrokerResource.txt
+
+
+Get-BrokerScopedObject  -MaxRecordCount 100000  |Out-File BrokerScopedObject.txt
+Get-BrokerServiceAddedCapability   |Out-File BrokerServiceAddedCapability.txt
+Get-BrokerServiceConfigurationData  -MaxRecordCount 100000  |Out-File BrokerServiceConfigurationData.txt
+Get-BrokerServiceInstance   |Out-File BrokerServiceInstance.txt
+Get-BrokerServiceStatus    |Out-File BrokerServiceStatus.txt
+Get-BrokerSession  -MaxRecordCount 100000  |Out-File BrokerSession.txt
+Get-BrokerSessionLinger  -MaxRecordCount 100000  |Out-File BrokerSessionLinger.txt
+Get-BrokerSessionPreLaunch  -MaxRecordCount 100000  |Out-File BrokerSessionPreLaunch.txt
+#Get-BrokerSessionRecordingStatus   |Out-File BrokerSessionRecordingStatus.txt
+
+Get-BrokerSharedDesktop  -MaxRecordCount 100000  |Out-File BrokerSharedDesktop.txt
+Get-BrokerSite   |Out-File BrokerSite.txt
+#Get-BrokerStorefrontAddress  |Out-File BrokerStorefrontAddress.txt
+Get-BrokerTag  -MaxRecordCount 100000  |Out-File BrokerTag.txt
+Get-BrokerTagUsage  -MaxRecordCount 100000  |Out-File BrokerTagUsage.txt
+#Get-BrokerTelemetryData  -MaxRecordCount 100000  |Out-File BrokerTelemetryData.txt
+Get-BrokerUnconfiguredMachine  -MaxRecordCount 100000  |Out-File BrokerUnconfiguredMachine.txt
+#Get-BrokerUniversalClaim  -MaxRecordCount 100000  |Out-File BrokerUniversalClaim.txt
+Get-BrokerUser  -MaxRecordCount 100000  |Out-File BrokerUser.txt
+Get-BrokerUserZonePreference  -MaxRecordCount 100000  |Out-File BrokerUserZonePreference.txt
