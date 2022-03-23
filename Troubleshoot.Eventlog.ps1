@@ -33,3 +33,9 @@ $GE3 | export-csv "$hostname-$FileName-3.csv"
 $Winevent=Get-WinEvent -ComputerName $hostname -FilterHashTable @{LogName=$LogName;ID=$eventid;StartTime=$StartTime;EndTime=$EndTime}   
 
 
+
+##########################################################
+
+$Begin = Get-Date -Date '1/22/2022 00:00:00'
+$End = Get-Date -Date '1/23/2022 00:00:00'
+Get-EventLog -LogName System -EntryType Error -After $Begin -Before $End -computername abc |export-csv genp01.csv
