@@ -1,4 +1,4 @@
-####--- #Get the VM Inventory from Citrix Studio --- ####
+###--- Enquiry assoicatd user of each VM  --- ###
 
 $computer = "DDC"
 Invoke-Command -Computer $computer -ScriptBlock {
