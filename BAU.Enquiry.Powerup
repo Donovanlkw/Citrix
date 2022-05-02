@@ -1,0 +1,12 @@
+$ComputerName="AZAWVCTXHDCP02`r`nAZAWVCTXSDCP02`r`nAZJWVCTXDCP02`r`nAZWAPPCTXTDDC02`r`nAZWAPPCTXODDC02"
+$computerName |out-file serverlist.txt
+
+$parameters = @{
+  ComputerName = Get-Content serverlist.txt
+  ScriptBlock = {Get-Brokermachine -SessionSupport MultiSession}
+}
+
+Invoke-Command @parameters |select DNSName |out-file  ServerlistMultisession.txt
+
+$ComputerName = Get-Content ServerlistMCS.txt
+Get-CimInstance -ComputerName $ComputerName -Class win32_operatingsystem | select csname, lastbootuptime |out-file bootuptime.txt
