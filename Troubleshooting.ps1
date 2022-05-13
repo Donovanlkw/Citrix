@@ -52,11 +52,6 @@ systeminfo |Out-File -FilePath  $file -append -Encoding ascii
 #----- Enquiry local Password Policy
 Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\Netlogon\Parameters\" |Out-File -FilePath  $file -append -Encoding ascii
 
-#----- Enquiry Local Secuirty policy
-secedit /export /cfg c:secpolori.inf
-type c:secpolori.inf |Out-File -FilePath  $file -append -Encoding ascii
-
-
 #-----Enquiry Permission of Folder
 (get-acl c:\tmp).access | ft IdentityReference,FileSystemRights,AccessControlType,IsInherited,InheritanceFlags -auto |Out-File -FilePath  $file -append -Encoding ascii
 
