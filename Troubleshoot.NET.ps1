@@ -1,11 +1,13 @@
 #################################################
 ###=============== Network performance ===============###
-
-$PIP= Get-Content PIP.txt
-$PIP|foreach-object{
-Write-Output $_
-Measure-command {test-netconnection $_ -port 443 -InformationLevel Quiet } |% TotalMilliseconds
+$RESULT = import-csv PIP.txt -Header PIP
+$RESULT|
+Foreach-object{
+$Perf=Measure-command {test-netconnection $_.pip -port 443 -InformationLevel Quiet } |% TotalMilliseconds
+$_ | Add-Member -MemberType NoteProperty -Name 'Performance' -Value $Perf 
 }
+$RESULT
+
 
 #################################################
 ###=============== DNS enquiry ===============###
@@ -13,11 +15,11 @@ Measure-command {test-netconnection $_ -port 443 -InformationLevel Quiet } |% To
 $DNSIP= Get-Content DNSIP.txt
 $FQDN1="z.z.z.z"
 $FQDN2="x.x.x"
-
 $DNSIP|foreach-object{   
 Resolve-DnsName -Name $FQDN1 -Server $_
 Resolve-DnsName -Name $FQDN2 -Server $_
 } 
+
 
 #################################################
 ###=============== Network tracing ===========###
