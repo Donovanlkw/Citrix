@@ -55,25 +55,6 @@ $argument = " -brokerServer $BrokerServer -CollectionName $CollectionName -user 
 $argument = $argument + " -vmssName $VMSSName "
 $argument = $argument + " -FQDNVIP $FQDNVIP -sqlserver $sqlserver -sqldb $sqldb -sqladmin $sqluserName -sqlpwd $sqlpassword"
 
-#----- Array Appraoch#1 
-$updateFeatures = @(
-  'UpdateServices-WidDB',
-  'UpdateServices-Services',
-  'UpdateServices-RSAT',
-  'UpdateServices-API',
-  'UpdateServices-UI'
-)
-Write-Output $updateFeatures
-#Install-WindowsFeature -Name $updateFeatures
-
-#----- Array Appraoch#2
-$Directory= 'D:SRSReportKeys', 'F:MSSQL', 'F:MSSQLTempDB', 'F:MSSQLUserDB', 'G:MSSQL', 'G:MSSQLUserDBLOG', 'G:MSSQLTempDBLogs', 'G:MSSQLBackup'
-$Directory|foreach-object{
-New-Item $_ -Type Directory
-$NewAcl = Get-Acl -Path $_
-Set-Acl -Path $_ -AclObject $NewAcl
-}
-
 
 ############## Credential ##############
 #$adminCredential = Get-AutomationPSCredential -Name 'AdminUser'
@@ -160,27 +141,6 @@ $argument = $argument + " -vmssName $VMSSName "
 $argument = $argument + " -FQDNVIP $FQDNVIP -sqlserver $sqlserver -sqldb $sqldb -sqladmin $sqluserName -sqlpwd $sqlpassword"
 
 
-#----- Array Appraoch#1 
-$updateFeatures = @(
-  'UpdateServices-WidDB',
-  'UpdateServices-Services',
-  'UpdateServices-RSAT',
-  'UpdateServices-API',
-  'UpdateServices-UI'
-)
-Write-Output $updateFeatures
-#Install-WindowsFeature -Name $updateFeatures
-
-
-#----- Array Appraoch#2
-$Directory= 'D:SRSReportKeys', 'F:MSSQL', 'F:MSSQLTempDB', 'F:MSSQLUserDB', 'G:MSSQL', 'G:MSSQLUserDBLOG', 'G:MSSQLTempDBLogs', 'G:MSSQLBackup'
-$Directory|foreach-object{
-New-Item $_ -Type Directory
-$NewAcl = Get-Acl -Path $_
-Set-Acl -Path $_ -AclObject $NewAcl
-}
-
-
 ############## Credential ##############
 #$adminCredential = Get-AutomationPSCredential -Name 'AdminUser'
 #$adminuserName = $adminCredential.UserName
@@ -239,7 +199,7 @@ Remove-RDServer       -Server $_.server -Role "RDS-RD-SERVER" -ConnectionBroker 
 }
 '
 
-################ Logic ################
+################ Event Log ################
 
 $StartTime=Get-Date -Year 2019 -Month 11 -Day 1 -Hour 00 -Minute 00
 $EndTime=Get-Date -Year 2020 -Month 11 -Day 1 -Hour 00 -Minute 00
