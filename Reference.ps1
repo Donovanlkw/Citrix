@@ -1,3 +1,34 @@
+#----- File handling
+#----- Object Handling -----#  
+Compare-Object -ReferenceObject $(Get-Content C:\test\testfile1.txt) -DifferenceObject $(Get-Content C:\test\testfile2.txt)                          
+
+
+#----- File Handling -----#        
+Measure-Command {Get-ChildItem -Path C:\Windows\*.txt -Recurse}                  
+Get-ChildItem -path c:\tmp–Recurse| Measure-Object -Property length -Minimum -Maximum -Average                
+
+
+#----- Read the content of file  
+Get-Content -Path $file| Format-Table -AutoSize  
+
+
+#----- Ojbect Handling -----#
+Compare-Object -ReferenceObject $(Get-Content C:\test\testfile1.txt) -DifferenceObject $(Get-Content C:\test\testfile2.txt)				
+
+#----- File Handling -----#    	
+Measure-Command {Get-ChildItem -Path C:\Windows\*.txt -Recurse}			
+Get-ChildItem -path c:\tmp–Recurse| Measure-Object -Property length -Minimum -Maximum -Average		
+
+#----- create a local file for schedule task  
+New-Item $file -force  
+Add-content $file 'ServerManager'  
+Add-content $file 'Start-Sleep -s 300'  
+Add-Content $file '$BrokerServer="' -NoNewline  
+Add-Content $file "$BrokerServer" -NoNewline  
+Add-Content $file '"'  
+Add-Content $file '  
+
+
 #----- Execute a command -----#  
 Start-Process -path 'C:\Program Files (x86)\Google\Chrome\ Application\chrome.exe'
 
@@ -23,11 +54,6 @@ Get-ChildItem |where {$_.name -like "a*"}
 -notlike	Means: not like	Example: -notlike "stopped" or -notlike "St*" or -notlike "*oppe*"
 -ge	Means: Greater or equal	Example: -ge 200 (Greater or equal to 200) or (>=200)
 -gt	Means: Greater than	Example: -gt 200 (Greater than 200) or (>200)
-
-Write-Host
-Write-Output
-Write-Error
-
 
 ################ Input  ################
 param (
@@ -96,12 +122,6 @@ $hostname="vwts19bk-easd12"
 
 
 
-#----- Ojbect Handling -----#
-Compare-Object -ReferenceObject $(Get-Content C:\test\testfile1.txt) -DifferenceObject $(Get-Content C:\test\testfile2.txt)				
-
-#----- File Handling -----#    	
-Measure-Command {Get-ChildItem -Path C:\Windows\*.txt -Recurse}			
-Get-ChildItem -path c:\tmp–Recurse| Measure-Object -Property length -Minimum -Maximum -Average		
 
 
 #----- Read the content of file
@@ -200,7 +220,7 @@ Remove-RDServer       -Server $_.server -Role "RDS-RD-SERVER" -ConnectionBroker 
 '
 
 ################ Event Log ################
-
+################ Date ################  
 $StartTime=Get-Date -Year 2019 -Month 11 -Day 1 -Hour 00 -Minute 00
 $EndTime=Get-Date -Year 2020 -Month 11 -Day 1 -Hour 00 -Minute 00
 $hostname="vwts19bk-easd12"
@@ -221,8 +241,6 @@ $GE2=Get-WinEvent   -ComputerName $hostname -FilterHashtable @{LogName=$LogName;
 $GE2 | export-csv "$hostname-$FileName-2.csv"
 $GE3=Get-WinEvent   -ComputerName $hostname -FilterHashtable @{LogName=$LogName;Level='3';StartTime=$StartTime;EndTime=$EndTime}  -MaxEvents  100
 $GE3 | export-csv "$hostname-$FileName-3.csv"
-
-
 
 <#
 ### Reset security configuration
