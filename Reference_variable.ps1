@@ -1,3 +1,39 @@
+# ----- Variable ----#
+$OBJ= New-Object -TypeName PSObject
+$OBJ | Add-Member -Name 'Name' -MemberType Noteproperty -Value 'Joe'
+$OBJ | Add-Member -Name 'Age' -MemberType Noteproperty -Value 32
+
+$array = @()
+$array += $obj
+
+
+#----- Array Appraoch#1 
+$updateFeatures = @(
+  'UpdateServices-WidDB',
+  'UpdateServices-Services',
+  'UpdateServices-RSAT',
+  'UpdateServices-API',
+  'UpdateServices-UI'
+)
+Write-Output $updateFeatures
+#Install-WindowsFeature -Name $updateFeatures
+
+#----- Array Appraoch#2
+$Directory= 'D:SRSReportKeys', 'F:MSSQL', 'F:MSSQLTempDB', 'F:MSSQLUserDB', 'G:MSSQL', 'G:MSSQLUserDBLOG', 'G:MSSQLTempDBLogs', 'G:MSSQLBackup'
+$Directory|foreach-object{
+New-Item $_ -Type Directory
+$NewAcl = Get-Acl -Path $_
+Set-Acl -Path $_ -AclObject $NewAcl
+}
+
+
+
+Write-Host
+Write-Output
+Write-Error
+
+
+
 Get-Variable | Out-String 
 
 $Env: 
