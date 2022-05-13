@@ -1,3 +1,14 @@
+# ----- Variable ----#
+$OBJ= New-Object -TypeName PSObject
+$OBJ | Add-Member -Name 'Name' -MemberType Noteproperty -Value 'Joe'
+$OBJ | Add-Member -Name 'Age' -MemberType Noteproperty -Value 32
+
+$array = @()
+$array += $obj
+
+
+
+
 #----- Array Appraoch#1   
 $updateFeatures = @(   
   'UpdateServices-WidDB',  
