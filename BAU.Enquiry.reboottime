@@ -1,0 +1,12 @@
+
+$computerName |out-file serverlistDDC.txt
+
+$parameters = @{
+  ComputerName = Get-Content serverlistDDC.txt
+  ScriptBlock = {Get-Brokermachine -ProvisioningType MCS}
+}
+
+Invoke-Command @parameters |select DNSName |export-csv ServerlistMCS.txt
+
+$ComputerNameMCS = Import-csv ServerlistMCS.txt -Header MCSserver
+Get-CimInstance -ComputerName $ComputerNameMCS.MCSserver -Class win32_operatingsystem | select csname, lastbootuptime |Sort-Object lastbootuptime
