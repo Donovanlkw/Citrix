@@ -1,10 +1,85 @@
+$dateStr = (Get-Date -Format "yyyyMMdd")
+#$snapshotName = $vmName+$dateStr
+#$resourceGroupName = 'pluralsight-resource-group'
+#$resourceGroupName = 'mfc-rg-gis-ctx-eas'
+#$resourceGroupName = 'mfc-rg-gis-ctx-images-eas'
+$location = 'eastasia' 
+$vmName1 = 'westus-data'
+$vmName2 = 'westus-nva'
+$vmName3 = 'westus-web'
+$MasterServerName="$vmName1","$vmName2","$vmName3"
+
+$PSPath="XDHyp:\HostingUnits\VNET_MFCv2-Internal_EAS-Development-S1\image.folder\MFC-rg-GIS-CTX-eas.resourcegroup\"
+$UpdatedImageFullPath=$PSPath+$snapshotName
+
+###--- Reboot and Shutdown the server ---###
+$MasterServerName| 
+Foreach-object{
+Restart-AzVM -ResourceGroupName $resourceGroupName -Name $_.
+#Stop-AzVM -ResourceGroupName $resourceGroupName -Name $_.
+}
+
+###--- take Snapshot in Azure ---###
+$MasterServerName| 
+Foreach-object{
+    $vm = Get-AzVM -ResourceGroupName $resourceGroupName -Name $_.
+    $snapshot =  New-AzSnapshotConfig -SourceUri $vm.StorageProfile.OsDisk.ManagedDisk.Id -Location $location -CreateOption copy
+    New-AzSnapshot -Snapshot $snapshot -SnapshotName $_.+$dateStr -ResourceGroupName $resourceGroupName
+}
+
+###--- rollout the MCS Image ---###
+Add-PSSnapin Citrix*
+$MCSMC=Get-Brokermachine -SessionSupport MultiSession -ProvisioningType MCS
+#$ProvisioningSchemeName=$MCSMC.CatalogName
+
+$ResourceGroup = “myRG”          ### Resource group name
+$VMName = “myVM”                 ### VM Name, example VDI-Master
+$DDC = “myddc.company.com”       ### Delivery controller FQDN or the Citrix Cloud Connector FQDN if you use Citrix Cloud
+$MCName = “myMC”                 ### Machine Catalog name
+$AzureNetworkName = “myNetwork”  ### Network name under Azure Hosting Connection in Citrix Studio
+$DDC = $DDC+“:80”
+
+$MCSMC|Foreach-object{
+#Get-BrokerCatalog -Name $_.
+Set–ProvSchemeMetadata  –AdminAddress $DDC -Name “ImageManagementPrep_DoImagePreparation” –ProvisioningSchemeName $_. -Value“True”
+$ProvScheme = Get–ProvScheme  –AdminAddress $DDC –ProvisioningSchemeName $_.
+$ProvSchemeGUID = $ProvScheme.ProvisioningSchemeUid
+Publish–ProvMasterVMImage  –AdminAddress $DDC –MasterImageVM "$PSPath+$_.+$dateStr" –ProvisioningSchemeName $_.
+Get–ProvSchemeMasterVMImageHistory  –AdminAddress $DDC –ProvisioningSchemeUid $ProvSchemeGUID –SortBy “Date”
+Start–BrokerNaturalRebootCycle  –AdminAddress $DDC -InputObject @(“$_.”)
+}
+
+#Get-ProvScheme -ProvisioningSchemeUid (Get-BrokerCatalog -Name $_).ProvisioningSchemeId 
+#$_.ProvisioningSchemeName 
+
+
+#$VM = Get–AzureRmVM –ResourceGroupName $ResourceGroup -Name $VMName
+#$Diskname = $VM.StorageProfile.OsDisk.Name
+#$MasterImage = “XDHyp:\HostingUnits\$AzureNetworkName\image.folder\$ResourceGroup.resourcegroup\$Diskname.manageddisk”
+
+###--- Updated the Image ---###
+Publish-ProvMasterVmImage –AdminAddress $DDC -ProvisioningSchemeName $x.ProvisioningSchemeName -MasterImageVM $UpdatedImageFullPath
+Get–ProvSchemeMasterVMImageHistory  –AdminAddress $DDC –ProvisioningSchemeUid $ProvSchemeGUID –SortBy “Date”
+Start–BrokerNaturalRebootCycle  –AdminAddress $DDC -InputObject @(“$MCName”)
+
+
+###--- Updated the Image ---###
+
+
+
 https://support.citrix.com/article/CTX129205
 https://www.citrix.com/blogs/2018/06/07/automate-the-cloud-citrix-azure-mcs-powershell/
+
+
+
+
+
+
+
 
 #### Import Azure PowerShell Module
 Import–Module -Name AzureRM
 Connect to your Azure tenant
-
 
 #### Connect to Azure Tenant
 $Azurecred = get–credentials
