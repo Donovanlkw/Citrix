@@ -41,41 +41,30 @@ $DDC = $DDC+“:80”
 
 $MCSMC|Foreach-object{
 #Get-BrokerCatalog -Name $_.
+$ImageName=(Get-BrokerCatalog -name $_.catalogname).Description
+$SnapshotFullPath= "$PSPath"+"$ImageName"+"$dateStr"
+$DDC=$_.ControllerDNSName
+
+#Write-Output $SnapshotFullPath
+#$XXX=Get-ProvScheme -ProvisioningSchemeUid (Get-BrokerCatalog -Name $_.catalogname).ProvisioningSchemeId 
+#Write-Output $XXX.ProvisioningSchemeName
+
 Set–ProvSchemeMetadata  –AdminAddress $DDC -Name “ImageManagementPrep_DoImagePreparation” –ProvisioningSchemeName $_. -Value“True”
 $ProvScheme = Get–ProvScheme  –AdminAddress $DDC –ProvisioningSchemeName $_.
 $ProvSchemeGUID = $ProvScheme.ProvisioningSchemeUid
-Publish–ProvMasterVMImage  –AdminAddress $DDC –MasterImageVM "$PSPath+$_.+$dateStr" –ProvisioningSchemeName $_.
+Publish–ProvMasterVMImage  –AdminAddress $DDC –MasterImageVM $SnapshotFullPath –ProvisioningSchemeName $_.
 Get–ProvSchemeMasterVMImageHistory  –AdminAddress $DDC –ProvisioningSchemeUid $ProvSchemeGUID –SortBy “Date”
 Start–BrokerNaturalRebootCycle  –AdminAddress $DDC -InputObject @(“$_.”)
 }
-
-#Get-ProvScheme -ProvisioningSchemeUid (Get-BrokerCatalog -Name $_).ProvisioningSchemeId 
-#$_.ProvisioningSchemeName 
-
 
 #$VM = Get–AzureRmVM –ResourceGroupName $ResourceGroup -Name $VMName
 #$Diskname = $VM.StorageProfile.OsDisk.Name
 #$MasterImage = “XDHyp:\HostingUnits\$AzureNetworkName\image.folder\$ResourceGroup.resourcegroup\$Diskname.manageddisk”
 
-###--- Updated the Image ---###
-Publish-ProvMasterVmImage –AdminAddress $DDC -ProvisioningSchemeName $x.ProvisioningSchemeName -MasterImageVM $UpdatedImageFullPath
-Get–ProvSchemeMasterVMImageHistory  –AdminAddress $DDC –ProvisioningSchemeUid $ProvSchemeGUID –SortBy “Date”
-Start–BrokerNaturalRebootCycle  –AdminAddress $DDC -InputObject @(“$MCName”)
-
-
-###--- Updated the Image ---###
-
 
 
 https://support.citrix.com/article/CTX129205
 https://www.citrix.com/blogs/2018/06/07/automate-the-cloud-citrix-azure-mcs-powershell/
-
-
-
-
-
-
-
 
 #### Import Azure PowerShell Module
 Import–Module -Name AzureRM
