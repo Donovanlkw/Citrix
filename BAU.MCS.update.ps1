@@ -29,6 +29,39 @@ Foreach-object{
 
 ###--- rollout the MCS Image ---###
 Add-PSSnapin Citrix*
+
+#$MCSVM=Get-Brokermachine -ProvisioningType MCS
+#$MCSMC=Get-Brokermachine -ProvisioningType MCS
+$MCSMC=Get-BrokerCatalog  -ProvisioningType MCS |select name
+$DDC=$MCSVM.ControllerDNSName
+$MC=$MCSVM.CatalogName
+$MCSConfig = Get-ProvScheme -AdminAddress $DDC –ProvisioningSchemeName $MC
+$ProvSchemeGUID = $MCSConfig.ProvisioningSchemeUid
+$MasterImage = $MCSConfig.MasterImageVM
+
+#XDHyp:\HostingUnits\VNET_MFCv2-Internal_EAS-Development-S1\image.folder\MFC-rg-GIS-CTX-eas.resourcegroup\AZAWVCTXVDAD01-22020715.snapshot
+
+$NewMasterImage= "AZAWVCTXVDAD01-20220715.snapshot"
+#$SnapshotName= "AZAWVCTXVDAD01_VDAUG.snapshot"
+$ImagePath= "xdhyp:\hostingunits\vnet_mfcv2-internal_eas-development-s1\image.folder\mfc-rg-gis-ctx-eas.resourcegroup\"
+$NewMasterImagefullPath = $ImagePath.ToLower() +$NewMasterImage.ToLower()
+
+
+### --- Testing --- ###
+Set-ProvSchemeMetadata –AdminAddress $DDC -Name “ImageManagementPrep_DoImagePreparation” –ProvisioningSchemeName $MCSMC.CatalogName -Value “True”
+$ProvScheme = Get-ProvScheme -AdminAddress $DDC –ProvisioningSchemeName $MCSMC.CatalogName
+$ProvSchemeGUID = $ProvScheme.ProvisioningSchemeUid
+$ProvSchemeName = $ProvScheme.ProvisioningSchemeName
+Publish-ProvMasterVMImage  –AdminAddress $DDC  –ProvisioningSchemeUid $ProvSchemeGUID –MasterImageVM XDHyp:\HostingUnits\VNET_MFCv2-Internal_EAS-Development-S1\image.folder\MFC-rg-GIS-CTX-eas.resourcegroup\AZAWVCTXVDAD01_VDAUG.snapshot -RunAsynchronously
+Publish-ProvMasterVMImage  –AdminAddress $DDC  –ProvisioningSchemeUid $ProvSchemeGUID –MasterImageVM $X
+
+
+
+$X="XDHyp:\HostingUnits\VNET_MFCv2-Internal_EAS-Development-S1\image.folder\MFC-rg-GIS-CTX-eas.resourcegroup\AZAWVCTXVDAD01_VDAUG.snapshot"
+
+
+
+
 $MCSMC=Get-Brokermachine -SessionSupport MultiSession -ProvisioningType MCS
 #$ProvisioningSchemeName=$MCSMC.CatalogName
 
