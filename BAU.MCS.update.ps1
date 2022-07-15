@@ -27,6 +27,16 @@ Foreach-object{
     New-AzSnapshot -Snapshot $snapshot -SnapshotName $_.+$dateStr -ResourceGroupName $resourceGroupName
 }
 
+
+
+
+
+
+
+
+
+
+
 ###--- rollout the MCS Image ---###
 Add-PSSnapin Citrix*
 
