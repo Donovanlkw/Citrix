@@ -25,18 +25,26 @@ Foreach-object{
 }
 
 
+
+
+
+
 ###--- rollout the MCS Image in DDC ---###
 Add-PSSnapin Citrix*
 
 $Type="PreProd"
 $dateStr = Get-Date -Format "yyyyMMdd"
-$MCVM=Get-Brokermachine -ProvisioningType MCS
 $DDC=$MCVM.ControllerDNSName | select -uniq |Select-Object -first 1
-$MCPreProd=$MCVM.CatalogName | select -uniq |Select-string -pattern "$Type"
-$MCProd=$MCVM.CatalogName | select -uniq |select-string -notMatch "$Type"
+if($Type -eq "PreProd"){
+$MCVM=Get-Brokermachine -ProvisioningType MCS |where {$_.catalogName -like "*PreProd"}
+}
+else{
+$MCVM=Get-Brokermachine -ProvisioningType MCS |where {$_.catalogName -notlike "*PreProd"}
+}
+$MC=$MCVM.CatalogName | select -uniq 
 
 
-$MCPreProd | Foreach-object{
+$MC| Foreach-object{
 $MCConfig = Get-ProvScheme -AdminAddress $DDC –ProvisioningSchemeName $_ | where {$_.machinecount -gt 0} 
 $MCImage = $MCConfig.MasterImageVM
 $SnapshotFile = split-path -path $MCImage -leaf
@@ -54,13 +62,26 @@ Write-Output  $NewSnapshotFullPath
 
 #Set-ProvSchemeMetadata –AdminAddress $DDC -Name “ImageManagementPrep_DoImagePreparation” –ProvisioningSchemeName "$_"  -Value “True”
 #Publish-ProvMasterVMImage -RunAsynchronously –AdminAddress $DDC –ProvisioningSchemeName "$_" –MasterImageVM "$SnapshotFullPath"
+}
 
+###--- assing adhoc-reboot tag to updated VM ---###
 $MCVm.Machinename | Foreach-object{
 add-brokertag -name 'adhoc-reboot' -machine $_
 }
-
 Get-ProvTask |select Status, DateStarted,ProvisioningSchemeName, ProvisioningSchemeUid |sort-object DateStarted
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 <#
@@ -84,7 +105,6 @@ $SnapshotFullPath = $SnapshotPath+$snapshotName
 
 Set-ProvSchemeMetadata –AdminAddress $DDC -Name “ImageManagementPrep_DoImagePreparation” –ProvisioningSchemeName "$MCSName"  -Value “True”
 Publish-ProvMasterVMImage -RunAsynchronously –AdminAddress $DDC –ProvisioningSchemeName "$MCSName" –MasterImageVM "$SnapshotFullPath"
-
 
 
 
@@ -113,11 +133,6 @@ $ProvSchemeGUID = $ProvScheme.ProvisioningSchemeUid
 $ProvSchemeName = $ProvScheme.ProvisioningSchemeName
 Publish-ProvMasterVMImage  –AdminAddress $DDC  –ProvisioningSchemeUid $ProvSchemeGUID –MasterImageVM XDHyp:\HostingUnits\VNET_MFCv2-Internal_EAS-Development-S1\image.folder\MFC-rg-GIS-CTX-eas.resourcegroup\AZAWVCTXVDAD01_VDAUG.snapshot -RunAsynchronously
 Publish-ProvMasterVMImage  –AdminAddress $DDC  –ProvisioningSchemeUid $ProvSchemeGUID –MasterImageVM $X
-
-
-
-$X="XDHyp:\HostingUnits\VNET_MFCv2-Internal_EAS-Development-S1\image.folder\MFC-rg-GIS-CTX-eas.resourcegroup\AZAWVCTXVDAD01_VDAUG.snapshot"
-
 
 
 
