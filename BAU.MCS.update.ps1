@@ -1,20 +1,18 @@
-$dateStr = (Get-Date -Format "yyyyMMdd")
-#$snapshotName = $vmName+$dateStr
-#$resourceGroupName = 'pluralsight-resource-group'
-#$resourceGroupName = 'mfc-rg-gis-ctx-eas'
-#$resourceGroupName = 'mfc-rg-gis-ctx-images-eas'
-$location = 'eastasia' 
-$vmName1 = 'westus-data'
-$vmName2 = 'westus-nva'
-$vmName3 = 'westus-web'
-$MasterServerName="$vmName1","$vmName2","$vmName3"
 
-$PSPath="XDHyp:\HostingUnits\VNET_MFCv2-Internal_EAS-Development-S1\image.folder\MFC-rg-GIS-CTX-eas.resourcegroup\"
-$UpdatedImageFullPath=$PSPath+$snapshotName
+###--- Take Snapshot in Azure ---###
+$MasterServer = 'AZAWVCTXVDAD01'
+$resourceGroupName = 'mfc-rg-gis-ctx-eas'
+$location = 'eastasia' 
+Select-AzSubscription MFC-Asia-DevQA_Internal-S1 
+
+$dateStr = Get-Date -Format "yyyyMMdd"
+$SnapshotName= $MasterServer+"-"+$dateStr+".snapshot"
+
+#if($reboot) {
+#$poweroff=Stop-AzVM -ResourceGroupName $resourceGroupName -Name $MasterServer }
 
 ###--- Reboot and Shutdown the server ---###
-$MasterServerName| 
-Foreach-object{
+$MasterServer| Foreach-object{
 Restart-AzVM -ResourceGroupName $resourceGroupName -Name $_.
 #Stop-AzVM -ResourceGroupName $resourceGroupName -Name $_.
 }
@@ -24,21 +22,39 @@ $MasterServerName|
 Foreach-object{
     $vm = Get-AzVM -ResourceGroupName $resourceGroupName -Name $_.
     $snapshot =  New-AzSnapshotConfig -SourceUri $vm.StorageProfile.OsDisk.ManagedDisk.Id -Location $location -CreateOption copy
-    New-AzSnapshot -Snapshot $snapshot -SnapshotName $_.+$dateStr -ResourceGroupName $resourceGroupName
+    New-AzSnapshot -Snapshot $snapshot -SnapshotName $_.+$dateStr -ResourceGroupName $resourceGroupName 
 }
 
 
 
 
-
-
-
-
-
-
-
-###--- rollout the MCS Image ---###
+###--- rollout the MCS Image in DDC ---###
 Add-PSSnapin Citrix*
+
+$MasterServer="AZAWVCTXVDAD01"
+$dateStr = Get-Date -Format "yyyyMMdd"
+
+#$MCSMC=Get-BrokerCatalog  -ProvisioningType MCS |select name
+
+$MCSVM=Get-Brokermachine -ProvisioningType MCS
+$DDC=$MCSVM.ControllerDNSName | select -uniq
+$MC=$MCSVM.CatalogName | select -uniq
+$MCConfig = Get-ProvScheme -AdminAddress $DDC –ProvisioningSchemeName $MC|where {$_.machinecount -gt 0} 
+#$ProvSchemeGUID = $MCConfig.ProvisioningSchemeUid
+#$MCName=$MCConfig.IdentityPoolName
+$MasterImage = $MCConfig.MasterImageVM
+$SnapshotPath = split-path -path $masterimage
+$snapshotName= $MasterServer+"-"+$dateStr+".snapshot"
+$SnapshotFullPath = $SnapshotPath+$snapshotName
+
+### --- Action to Update the Macine Catalog --- ###
+
+Set-ProvSchemeMetadata –AdminAddress $DDC -Name “ImageManagementPrep_DoImagePreparation” –ProvisioningSchemeName "$MCSName"  -Value “True”
+Publish-ProvMasterVMImage -RunAsynchronously –AdminAddress $DDC –ProvisioningSchemeName "$MCSName" –MasterImageVM "$SnapshotFullPath"
+
+
+
+
 
 #$MCSVM=Get-Brokermachine -ProvisioningType MCS
 #$MCSMC=Get-Brokermachine -ProvisioningType MCS
