@@ -1,4 +1,3 @@
-
 ###--- Take Snapshot in Azure ---###
 $MasterServer = 'AZAWVCTXVDAD01'
 $resourceGroupName = 'mfc-rg-gis-ctx-eas'
@@ -26,11 +25,45 @@ Foreach-object{
 }
 
 
-
-
 ###--- rollout the MCS Image in DDC ---###
 Add-PSSnapin Citrix*
 
+$Type="PreProd"
+$dateStr = Get-Date -Format "yyyyMMdd"
+$MCVM=Get-Brokermachine -ProvisioningType MCS
+$DDC=$MCVM.ControllerDNSName | select -uniq |Select-Object -first 1
+$MCPreProd=$MCVM.CatalogName | select -uniq |Select-string -pattern "$Type"
+$MCProd=$MCVM.CatalogName | select -uniq |select-string -notMatch "$Type"
+
+
+$MCPreProd | Foreach-object{
+$MCConfig = Get-ProvScheme -AdminAddress $DDC –ProvisioningSchemeName $_ | where {$_.machinecount -gt 0} 
+$MCImage = $MCConfig.MasterImageVM
+$SnapshotFile = split-path -path $MCImage -leaf
+$MasterServer = $snapshotfile.Substring(0,$snapshotfile.indexof("-"))
+$SnapshotPath = split-path -path $MCImage
+$NewSnapshotName = $MasterServer+"-"+$dateStr+".snapshot"
+$NewSnapshotFullPath = $SnapshotPath+"\"+$NewSnapshotName
+Write-Output  $DDC
+Write-Output  $_
+Write-Output  $MasterServer
+Write-Output  $MCImage
+Write-Output  $SnapshotPath
+Write-Output  $NewsnapshotName
+Write-Output  $NewSnapshotFullPath
+
+#Set-ProvSchemeMetadata –AdminAddress $DDC -Name “ImageManagementPrep_DoImagePreparation” –ProvisioningSchemeName "$_"  -Value “True”
+#Publish-ProvMasterVMImage -RunAsynchronously –AdminAddress $DDC –ProvisioningSchemeName "$_" –MasterImageVM "$SnapshotFullPath"
+
+$MCVm.Machinename | Foreach-object{
+add-brokertag -name 'adhoc-reboot' -machine $_
+}
+
+Get-ProvTask |select Status, DateStarted,ProvisioningSchemeName, ProvisioningSchemeUid |sort-object DateStarted
+}
+
+
+<#
 $MasterServer="AZAWVCTXVDAD01"
 $dateStr = Get-Date -Format "yyyyMMdd"
 
