@@ -1,57 +1,52 @@
-$ComputerName=
-$computerName |out-file serverlist.txt
+$computerName |out-file serverlistDDC.txt
+
+###---- https://support.citrix.com/article/CTX238581 ---####           
 
 $parameters = @{
-  ComputerName = Get-Content serverlist.txt
-  ScriptBlock = {Get-BrokerController}
+  ComputerName = Get-Content serverlistDDC.txt
+  ScriptBlock = {
+    Get-AcctServiceStatus;
+    Get-AdminServiceStatus;
+    Get-AnalyticsServiceStatus;
+    Get-AppLibServiceStatus;
+    Get-BrokerServiceStatus;
+    Get-ConfigServiceStatus;
+    Get-EnvTestServiceStatus;
+    Get-HypServiceStatus;
+    Get-LogServiceStatus;
+    Get-MonitorServiceStatus;
+    Get-OrchServiceStatus;
+    Get-ProvServiceStatus;
+    Get-SfServiceStatus;
+    Get-TrustServiceStatus; 
+    Get-LogDatastore;
+    Get-MonitorDatastore;
+    $BrokerDBConnection=Get-BrokerDBConnection
+    Test-BrokerDBConnection -DBConnection $BrokerDBConnection 
+    $MonitorDBConnection=Get-MonitorDBConnection
+    Test-MonitorDBConnection -DBConnection $MonitorDBConnection
+    $LogDBConnection=Get-LogDBConnection
+    Test-LogDBConnection -DBConnection $LogDBConnection
+   }
 }
-Invoke-Command @parameters | select DNSName, state, DesktopsRegistered, LicensingGraceState |Format-table -AutoSize
-
-###---- https://support.citrix.com/article/CTX238581 ---####
-
-Get-AcctServiceStatus                                                                                                          
-Get-AdminServiceStatus                                                                                                         
-Get-AnalyticsServiceStatus                                                                                                     
-Get-AppLibServiceStatus                                                                                                        
-Get-BrokerServiceStatus                                                                                                        
-Get-ConfigServiceStatus                                                                                                        
-Get-EnvTestServiceStatus                                                                                                       
-Get-HypServiceStatus                                                                                                           
-Get-LogServiceStatus                                                                                                           
-Get-MonitorServiceStatus                                                                                                       
-Get-OrchServiceStatus                                                                                                          
-Get-ProvServiceStatus                                                                                                          
-Get-SfServiceStatus                                                                                                            
-Get-TrustServiceStatus           
+Invoke-Command @parameters |select PSComputerName, DataStore, Status, ServiceStatus, ExtraInfo |Format-table -AutoSize
 
 Get-ConfigRegisteredServiceInstance | Measure
 
-Get-LogDatastore |select DataStore, ConnectionString, Status
-Get-MonitorDatastore |select DataStore, ConnectionString, Status
+$ComputerName| Foreach-object {
+$Compu=$_
+$Sitetest=Start-EnvTestTask -TestSuiteId Infrastructure
+$Sitetestresult=$Sitetest.Testresults
+$SitetestPASS=($Sitetestresult |Where-Object {$_.TestComponentStatus -eq "CompletePassed"}).count
+$SitetestFAIL=($Sitetestresult |Where-Object {$_.TestComponentStatus -ne "CompletePassed"}).count
 
-$BrokerDBConnection=Get-BrokerDBConnection
-Test-BrokerDBConnection -DBConnection $BrokerDBConnection 
-$MonitorDBConnection=Get-MonitorDBConnection
-Test-MonitorDBConnection -DBConnection $MonitorDBConnection
-$LogDBConnection=Get-LogDBConnection
-Test-LogDBConnection -DBConnection $LogDBConnection
+$VMInfo = [pscustomobject]@{
+Name = $_
+SitetestPASS=$SitetestPASS
+SitetestFAIL=$SitetestFAIL
+}
+# $VMInfo |Format-Table -autosize
+$AllResult += $VMInfo
+}
 
-
-#Test-AcctDBConnection                                                                                                          
-#Test-AdminDBConnection                                                                                                         
-#Test-AnalyticsDBConnection                                                                                                     
-#Test-AppLibDBConnection                                                                                                        
-#Test-BrokerDBConnection                                                                                                        
-#Test-ConfigDBConnection                                                                                                        
-#Test-EnvTestDBConnection                                                                                                       
-#Test-HypDBConnection                                                                                                           
-#Test-LogDBConnection                                                                                                           
-#Test-MonitorDBConnection                                                                                                       
-#Test-OrchDBConnection                                                                                                          
-#Test-ProvDBConnection                                                                                                          
-#Test-SfDBConnection                                                                                                            
-#Test-TrustDBConnection                                                                                                          
-
-###---- https://support.citrix.com/article/CTX238581 ---####
-
-
+$AllResult
