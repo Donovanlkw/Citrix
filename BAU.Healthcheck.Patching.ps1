@@ -2,7 +2,7 @@
 $ComputerName = Get-Content 'ServerlistMaster.txt'
 $AllResult = @()
 
-$StartTime=(Get-date).AddDays(-10)
+$StartTime=(Get-date).AddDays(-14)
 
 $ComputerName| Foreach-object {
 $PendingReboot=0
@@ -11,7 +11,6 @@ $Hotfix = Get-hotfix  -computername $_  |where-object {$_.installedOn -gt $start
 $CitrixService = Get-Service  -computername $_ -DisplayName Citrix* |where-object {$_.status -ne "Running"}
 
 $reg=Invoke-Command -Computer $_ -ScriptBlock {
-get-ItemProperty  -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update" -Name AUOptions -ErrorAction Ignore
 get-ItemProperty  -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\Component Based Servicing" -Name RebootPending  -ErrorAction Ignore
 get-ItemProperty  -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\Component Based Servicing" -Name RebootPending  -ErrorAction Ignore 
 get-ItemProperty  -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\Component Based Servicing" -Name PackagesPending -ErrorAction Ignore
