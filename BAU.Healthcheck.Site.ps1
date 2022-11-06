@@ -31,7 +31,6 @@ $parameters = @{
 }
 Invoke-Command @parameters |select PSComputerName, DataStore, Status, ServiceStatus, ExtraInfo |Format-table -AutoSize
 
-
 #$AllResult = @()
 
 $parameters = @{
@@ -43,16 +42,14 @@ $parameters = @{
     $SitetestPASS=($Sitetestresult |Where-Object {$_.TestComponentStatus -eq "CompletePassed"}).count
     $SitetestFAIL=($Sitetestresult |Where-Object {$_.TestComponentStatus -ne "CompletePassed"}).count
 
-    $VMInfo = [pscustomobject]@{
-    Name=$x.value
-    SitetestPASS=$SitetestPASS
-    SitetestFAIL=$SitetestFAIL
-    }
-
-    $VMInfo |Format-Table -autosize
-    #$AllResult +=$VMInfo
-    #$AllResult|Format-Table -autosize
+$VMInfo = [pscustomobject]@{
+Name=$x.value
+SitetestPASS=$SitetestPASS
+SitetestFAIL=$SitetestFAIL
+}
+$VMInfo |Format-Table -autosize
+#$AllResult +=$VMInfo
+#$AllResult|Format-Table -autosize
     }
 }
-
 Invoke-Command @parameters 
