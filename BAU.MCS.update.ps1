@@ -34,7 +34,7 @@ Add-PSSnapin Citrix*
 
 $Type="PreProd"
 $dateStr = Get-Date -Format "yyyyMMdd"
-$DDC=$MCVM.ControllerDNSName | select -uniq |Select-Object -first 1
+
 if($Type -eq "PreProd"){
 $MCVM=Get-Brokermachine -ProvisioningType MCS |where {$_.catalogName -like "*PreProd"}
 }
@@ -42,6 +42,8 @@ else{
 $MCVM=Get-Brokermachine -ProvisioningType MCS |where {$_.catalogName -notlike "*PreProd"}
 }
 $MC=$MCVM.CatalogName | select -uniq 
+$DDC=$MCVM.ControllerDNSName | select -uniq |Select-Object -first 1
+
 
 
 $MC| Foreach-object{
