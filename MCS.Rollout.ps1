@@ -33,7 +33,7 @@ Write-Output  $NewsnapshotName
 Write-Output  $NewSnapshotFullPath
 
 #Set-ProvSchemeMetadata –AdminAddress $DDC -Name “ImageManagementPrep_DoImagePreparation” –ProvisioningSchemeName "$_"  -Value “True”
-#Publish-ProvMasterVMImage -RunAsynchronously –AdminAddress $DDC –ProvisioningSchemeName "$_" –MasterImageVM "$SnapshotFullPath"
+#Publish-ProvMasterVMImage -RunAsynchronously –AdminAddress $DDC –ProvisioningSchemeName "$_" –MasterImageVM "$NewSnapshotFullPath"
 }
 
 ###--- assing adhoc-reboot tag to updated VM ---###
