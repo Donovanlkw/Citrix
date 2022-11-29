@@ -1,33 +1,31 @@
-###--- Take Snapshot in Azure ---###
-$MasterServer = 'AZAWVCTXVDAD01'
+### --- Perform Patching healthcheck
+
+$ComputerName="AZAWVCTXVDAD01`
+
+$ComputerName = Get-Content 'Non-Prod_Master.txt'
+#$ComputerName = Get-Content 'SEA_Master.txt'
+#$ComputerName = Get-Content 'EAS_Master.txt'
+#$ComputerName = Get-Content 'JPE_Master.txt'
+#$ComputerName = Get-Content 'EnI_Master.txt'
+
 $resourceGroupName = 'mfc-rg-gis-ctx-eas'
 $location = 'eastasia' 
 Select-AzSubscription MFC-Asia-DevQA_Internal-S1 
-
 $dateStr = Get-Date -Format "yyyyMMdd"
-$SnapshotName= $MasterServer+"-"+$dateStr+".snapshot"
-
-#if($reboot) {
-#$poweroff=Stop-AzVM -ResourceGroupName $resourceGroupName -Name $MasterServer }
 
 ###--- Reboot and Shutdown the server ---###
-$MasterServer| Foreach-object{
-Restart-AzVM -ResourceGroupName $resourceGroupName -Name $_.
-#Stop-AzVM -ResourceGroupName $resourceGroupName -Name $_.
+$ComputerName| Foreach-object {
+#Restart-AzVM -ResourceGroupName $resourceGroupName -Name $_.
+Stop-AzVM -ResourceGroupName $resourceGroupName -Name $_.
 }
 
-###--- take Snapshot in Azure ---###
-$MasterServerName| 
-Foreach-object{
-    $vm = Get-AzVM -ResourceGroupName $resourceGroupName -Name $_.
-    $snapshot =  New-AzSnapshotConfig -SourceUri $vm.StorageProfile.OsDisk.ManagedDisk.Id -Location $location -CreateOption copy
-    New-AzSnapshot -Snapshot $snapshot -SnapshotName $_.+$dateStr -ResourceGroupName $resourceGroupName 
+### --- Taking Snapshot in Azure ---###
+$ComputerName| Foreach-object {
+$SnapshotName= $_.+"-"+$dateStr+".snapshot"
+$vm = Get-AzVM -ResourceGroupName $resourceGroupName -Name $MasterServer
+$snapshotconfig =  New-AzSnapshotConfig -SourceUri $vm.StorageProfile.OsDisk.ManagedDisk.Id -Location $location -CreateOption copy
+$Snapshot = New-AzSnapshot -Snapshot $snapshotconfig -SnapshotName $snapshotName -ResourceGroupName $resourceGroupName 
 }
-
-
-
-
-
 
 ###--- rollout the MCS Image in DDC ---###
 Add-PSSnapin Citrix*
