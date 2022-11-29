@@ -16,7 +16,7 @@ $dateStr = Get-Date -Format "yyyyMMdd"
 ###--- Reboot and Shutdown the server ---###
 $ComputerName| Foreach-object {
 #Restart-AzVM -ResourceGroupName $resourceGroupName -Name $_.
-Stop-AzVM -ResourceGroupName $resourceGroupName -Name $_.
+Stop-AzVM -ResourceGroupName $resourceGroupName -Name $_ -
 }
 
 ### --- Taking Snapshot in Azure ---###
