@@ -32,81 +32,30 @@ Write-Output  $SnapshotPath
 Write-Output  $NewsnapshotName
 Write-Output  $NewSnapshotFullPath
 
-#Set-ProvSchemeMetadata –AdminAddress $DDC -Name “ImageManagementPrep_DoImagePreparation” –ProvisioningSchemeName "$_"  -Value “True”
-#Publish-ProvMasterVMImage -RunAsynchronously –AdminAddress $DDC –ProvisioningSchemeName "$_" –MasterImageVM "$NewSnapshotFullPath"
+### --- Updating --- ###
+Set-ProvSchemeMetadata –AdminAddress $DDC -Name “ImageManagementPrep_DoImagePreparation” –ProvisioningSchemeName "$_"  -Value “True”
+Publish-ProvMasterVMImage -RunAsynchronously –AdminAddress $DDC –ProvisioningSchemeName "$_" –MasterImageVM "$NewSnapshotFullPath"
 }
 
 ###--- assing adhoc-reboot tag to updated VM ---###
 $MCVm.Machinename | Foreach-object{
 add-brokertag -name 'adhoc-reboot' -machine $_
 }
+
 Get-ProvTask |select Status, DateStarted,ProvisioningSchemeName, ProvisioningSchemeUid |sort-object DateStarted
 
 
 
-
-
-
-
-
-
-
-
-
-
+### --- Validation --- ###
+Get-ProvTask -MaxRecordCount 999 |select Status, DateStarted,ProvisioningSchemeName, ProvisioningSchemeUid |sort-object DateStarted
+Get-ProvTask -MaxRecordCount 999 | where {$_.Status -eq “Running”}  |select Status, DateStarted,ProvisioningSchemeName, ProvisioningSchemeUid
+Get-ProvVM |select  VMName, BootedImage |Format-List
 
 
 <#
-$MasterServer="AZAWVCTXVDAD01"
-$dateStr = Get-Date -Format "yyyyMMdd"
 
-#$MCSMC=Get-BrokerCatalog  -ProvisioningType MCS |select name
-
-$MCSVM=Get-Brokermachine -ProvisioningType MCS
-$DDC=$MCSVM.ControllerDNSName | select -uniq
-$MC=$MCSVM.CatalogName | select -uniq
-$MCConfig = Get-ProvScheme -AdminAddress $DDC –ProvisioningSchemeName $MC|where {$_.machinecount -gt 0} 
-#$ProvSchemeGUID = $MCConfig.ProvisioningSchemeUid
-#$MCName=$MCConfig.IdentityPoolName
-$MasterImage = $MCConfig.MasterImageVM
-$SnapshotPath = split-path -path $masterimage
-$snapshotName= $MasterServer+"-"+$dateStr+".snapshot"
-$SnapshotFullPath = $SnapshotPath+$snapshotName
-
-### --- Action to Update the Macine Catalog --- ###
-
-Set-ProvSchemeMetadata –AdminAddress $DDC -Name “ImageManagementPrep_DoImagePreparation” –ProvisioningSchemeName "$MCSName"  -Value “True”
-Publish-ProvMasterVMImage -RunAsynchronously –AdminAddress $DDC –ProvisioningSchemeName "$MCSName" –MasterImageVM "$SnapshotFullPath"
-
-
-
-
-#$MCSVM=Get-Brokermachine -ProvisioningType MCS
-#$MCSMC=Get-Brokermachine -ProvisioningType MCS
-$MCSMC=Get-BrokerCatalog  -ProvisioningType MCS |select name
-$DDC=$MCSVM.ControllerDNSName
-$MC=$MCSVM.CatalogName
-$MCSConfig = Get-ProvScheme -AdminAddress $DDC –ProvisioningSchemeName $MC
-$ProvSchemeGUID = $MCSConfig.ProvisioningSchemeUid
-$MasterImage = $MCSConfig.MasterImageVM
-
-#XDHyp:\HostingUnits\VNET_MFCv2-Internal_EAS-Development-S1\image.folder\MFC-rg-GIS-CTX-eas.resourcegroup\AZAWVCTXVDAD01-22020715.snapshot
-
-$NewMasterImage= "AZAWVCTXVDAD01-20220715.snapshot"
-#$SnapshotName= "AZAWVCTXVDAD01_VDAUG.snapshot"
 $ImagePath= "xdhyp:\hostingunits\vnet_mfcv2-internal_eas-development-s1\image.folder\mfc-rg-gis-ctx-eas.resourcegroup\"
 $NewMasterImagefullPath = $ImagePath.ToLower() +$NewMasterImage.ToLower()
-
-
-### --- Testing --- ###
-Set-ProvSchemeMetadata –AdminAddress $DDC -Name “ImageManagementPrep_DoImagePreparation” –ProvisioningSchemeName $MCSMC.CatalogName -Value “True”
-$ProvScheme = Get-ProvScheme -AdminAddress $DDC –ProvisioningSchemeName $MCSMC.CatalogName
-$ProvSchemeGUID = $ProvScheme.ProvisioningSchemeUid
-$ProvSchemeName = $ProvScheme.ProvisioningSchemeName
-Publish-ProvMasterVMImage  –AdminAddress $DDC  –ProvisioningSchemeUid $ProvSchemeGUID –MasterImageVM XDHyp:\HostingUnits\VNET_MFCv2-Internal_EAS-Development-S1\image.folder\MFC-rg-GIS-CTX-eas.resourcegroup\AZAWVCTXVDAD01_VDAUG.snapshot -RunAsynchronously
-Publish-ProvMasterVMImage  –AdminAddress $DDC  –ProvisioningSchemeUid $ProvSchemeGUID –MasterImageVM $X
-
-
 
 $MCSMC=Get-Brokermachine -SessionSupport MultiSession -ProvisioningType MCS
 #$ProvisioningSchemeName=$MCSMC.CatalogName
