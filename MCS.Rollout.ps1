@@ -52,6 +52,25 @@ Get-ProvTask -MaxRecordCount 999 | where {$_.Status -eq “Running”}  |select 
 Get-ProvVM |select  VMName, BootedImage |Format-List
 
 
+
+
+### --- Validation --- ###
+Get-ProvTask |select Status, DateStarted,ProvisioningSchemeName, ProvisioningSchemeUid
+Get-ProvTask | where {$_.Status -eq “Running”}
+Get-ProvVM |select  VMName, BootedImage |Format-List
+
+
+Get-ProvTask | where {$_.Type -eq “DisusedImageCleanup” -and $_.Status -ne “Finished”}
+Get-ProvTask | where {$_.Type -eq “DisusedImageCleanup” -and $_.WorkflowStatus -eq “Terminated”} | Remove-ProvTask
+Get-ProvSchemeMasterVMImageHistory  –AdminAddress $DDC –ProvisioningSchemeUid $ProvSchemeGUID –SortBy “Date”
+
+### --- Rebuild server --- ###
+get-brokermachine 
+Get-ProvTask |select Status, DateStarted,ProvisioningSchemeName, ProvisioningSchemeUid
+Get-ProvTask | where {$_.Status -eq “Running”}
+Get-ProvVM |select  VMName, BootedImage |Format-List
+
+
 <#
 
 $ImagePath= "xdhyp:\hostingunits\vnet_mfcv2-internal_eas-development-s1\image.folder\mfc-rg-gis-ctx-eas.resourcegroup\"
