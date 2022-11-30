@@ -25,7 +25,7 @@ Select-AzSubscription MFC-Asia-DevQA_Internal-S1
 $dateStr = Get-Date -Format "yyyyMMdd"
 
 $ComputerName| Foreach-object {
-$SnapshotName= $_+"-"+$dateStr+".snapshot"
+$SnapshotName= $_+"-"+$dateStr
 $vm = Get-AzVM -ResourceGroupName $resourceGroupName -Name $_
 $snapshotconfig =  New-AzSnapshotConfig -SourceUri $vm.StorageProfile.OsDisk.ManagedDisk.Id -Location $location  -SkuName Standard_ZRS -CreateOption copy
 $Snapshot = New-AzSnapshot -Snapshot $snapshotconfig -SnapshotName $snapshotName -ResourceGroupName $resourceGroupName 
