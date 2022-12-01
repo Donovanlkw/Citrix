@@ -49,7 +49,7 @@ Get-ProvTask |select Status, DateStarted,ProvisioningSchemeName, ProvisioningSch
 ### --- Validation --- ###
 Get-ProvTask -MaxRecordCount 999 |select Status, DateStarted,ProvisioningSchemeName, ProvisioningSchemeUid |sort-object DateStarted
 Get-ProvTask -MaxRecordCount 999 | where {$_.Status -eq “Running”}  |select Status, DateStarted,ProvisioningSchemeName, ProvisioningSchemeUid
-Get-ProvVM |select  VMName, BootedImage |Format-List
+Get-ProvVM |select  VMName, BootedImage, LastBootTime  |Format-List
 
 
 
