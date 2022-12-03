@@ -42,6 +42,26 @@ $MCVm.Machinename | Foreach-object{
 add-brokertag -name 'adhoc-reboot' -machine $_
 }
 
+
+
+###--- Step 1a, power ON all master --- ###
+$ComputerName = Get-Content 'VM_Master_EAS.txt'
+$DDC="AZAWVCTXHDCP02"
+
+$ComputerName| Foreach-object {
+New-BrokerHostingPowerAction -AdminAddress $DDC -Action TurnOn -MachineName $_
+}
+
+###--- rebuilt all preprod VM ---###
+if($Type -eq "PreProd"){
+$MCVM=Get-Brokermachine -AdminAddress $DDC -ProvisioningType MCS |where {$_.catalogName -like "*PreProd"}
+}
+$MCVm.Machinename 
+$MCVm.Machinename | Foreach-object{
+New-BrokerHostingPowerAction -AdminAddress $DDC -Action Restart -MachineName $_
+}
+
+
 Get-ProvTask |select Status, DateStarted,ProvisioningSchemeName, ProvisioningSchemeUid |sort-object DateStarted
 
 
@@ -69,6 +89,48 @@ get-brokermachine
 Get-ProvTask |select Status, DateStarted,ProvisioningSchemeName, ProvisioningSchemeUid
 Get-ProvTask | where {$_.Status -eq “Running”}
 Get-ProvVM |select  VMName, BootedImage |Format-List
+
+
+
+### --- verify all MC snapshot used --- ###
+Add-PSSnapin Citrix*
+
+$DDC= "AZAWVCTXHDCP01"
+$MCVM=Get-Brokermachine -AdminAddress $DDC -ProvisioningType MCS
+$MC=$MCVM.CatalogName | select -uniq
+
+$MC| Foreach-object{
+$MCConfig = Get-ProvScheme -AdminAddress $DDC –ProvisioningSchemeName $_ | where {$_.machinecount -gt 0} 
+$MCImage = $MCConfig.MasterImageVM
+$SnapshotFile = split-path -path $MCImage -leaf
+$MasterServer = $snapshotfile.Substring(0,$snapshotfile.indexof("-"))
+$SnapshotPath = split-path -path $MCImage
+$NewSnapshotName = $MasterServer+"-"+$dateStr+".snapshot"
+$NewSnapshotFullPath = $SnapshotPath+"\"+$NewSnapshotName
+Write-Output  $_
+Write-Output  $MasterServer
+Write-Output  $MCImage
+Write-Output  $SnapshotPath
+Write-Output  '=== ### === ### === ### === ###'
+}
+
+###--- verification ---###
+Get-ProvTask |select Status, DateStarted,ProvisioningSchemeName, ProvisioningSchemeUid |sort-object DateStarted
+Get-ProvVM |select  VMName, BootedImage, LastBootTime  |Format-List
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 <#
