@@ -3,23 +3,29 @@
 
 ### --- Graceful shutdown via Citrix Studio.
 
+#$ComputerName="AZAWVCTXVDAD01"
+#$ComputerName = Get-Content 'VM_Master_Non-Prod.txt'
+#$ComputerName = Get-Content 'VM_Master_EAS.txt'
+#$ComputerName = Get-Content 'VM_Master_JPE.txt'
 
-$ComputerName="AZAWVCTXVDAD01"
 
-$ComputerName = Get-Content 'Non-Prod_Master.txt'
-#$ComputerName = Get-Content 'SEA_Master.txt'
-#$ComputerName = Get-Content 'EAS_Master.txt'
-#$ComputerName = Get-Content 'JPE_Master.txt'
-#$ComputerName = Get-Content 'EnI_Master.txt'
+$ComputerName = Get-Content 'VM_Master_SEA.txt'
+$DDC="AZAWVCTXSDCP02"
+
 $ComputerName| Foreach-object {
-New-BrokerHostingPowerAction -Action Shutdown -MachineName $_
+New-BrokerHostingPowerAction -AdminAddress $DDC -Action Shutdown -MachineName $_
 }
 
 
-
-
 ### --- Taking Snapshot in Azure ---###
-$resourceGroupName = 'mfc-rg-gis-ctx-eas'
+
+
+$resourceGroupName = 'mfc-rg-gis-ctx-sea'
+
+
+#$resourceGroupName = 'mfc-rg-gis-ctx-eas'
+#$resourceGroupName = 'mfc-rg-gis-ctx-jpe'
+mfc-rg-gis-ctx-images-sea
 $location = 'eastasia' 
 Select-AzSubscription MFC-Asia-DevQA_Internal-S1 
 $dateStr = Get-Date -Format "yyyyMMdd"
