@@ -9,6 +9,7 @@ $MC=$result.IdentityPoolName
   $report= for($i= 0; $i -lt $Result.count; $i++) {  
     [PSCustomObject]@{
     MC= $result[$i].IdentityPoolName
+    ImageUpdate = $result[$i].MasterImageVMDate
     Snapshot= split-path -path $result[$i].MasterImageVM -leaf
     }
   }
