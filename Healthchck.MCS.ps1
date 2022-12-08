@@ -1,4 +1,5 @@
 <### --- Healthcheck v2  --- ###>
+
 $DDC |ForEach{
 $result=Get-ProvScheme -AdminAddress $_ |where {$_.machinecount -gt 0} 
 $Snapshot=split-path -path $result.MasterImageVM -leaf
@@ -7,11 +8,11 @@ $MC=$result.IdentityPoolName
   $report =@()
   $report= for($i= 0; $i -lt $Result.count; $i++) {  
     [PSCustomObject]@{
-    MC= $MC[$i]
-    Snapshot= $snapshot[$i]
+    MC= $result[$i].IdentityPoolName
+    Snapshot= split-path -path $result[$i].MasterImageVM -leaf
     }
   }
-$report
+$report |Format-Table
 }
 
 
