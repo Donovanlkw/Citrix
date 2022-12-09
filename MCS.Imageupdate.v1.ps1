@@ -66,57 +66,11 @@ Get-ProvTask |select Status, DateStarted,ProvisioningSchemeName, ProvisioningSch
 
 
 
-### --- Validation --- ###
-Get-ProvTask -MaxRecordCount 999 |select Status, DateStarted,ProvisioningSchemeName, ProvisioningSchemeUid |sort-object DateStarted
-Get-ProvTask -MaxRecordCount 999 | where {$_.Status -eq “Running”}  |select Status, DateStarted,ProvisioningSchemeName, ProvisioningSchemeUid
-Get-ProvVM |select  VMName, BootedImage, LastBootTime  |Format-List
-
-
-
-
-### --- Validation --- ###
-Get-ProvTask |select Status, DateStarted,ProvisioningSchemeName, ProvisioningSchemeUid
-Get-ProvTask | where {$_.Status -eq “Running”}
-Get-ProvVM |select  VMName, BootedImage |Format-List
-
-
-Get-ProvTask | where {$_.Type -eq “DisusedImageCleanup” -and $_.Status -ne “Finished”}
-Get-ProvTask | where {$_.Type -eq “DisusedImageCleanup” -and $_.WorkflowStatus -eq “Terminated”} | Remove-ProvTask
-Get-ProvSchemeMasterVMImageHistory  –AdminAddress $DDC –ProvisioningSchemeUid $ProvSchemeGUID –SortBy “Date”
-
 ### --- Rebuild server --- ###
 get-brokermachine 
 Get-ProvTask |select Status, DateStarted,ProvisioningSchemeName, ProvisioningSchemeUid
 Get-ProvTask | where {$_.Status -eq “Running”}
 Get-ProvVM |select  VMName, BootedImage |Format-List
-
-
-
-### --- verify all MC snapshot used --- ###
-Add-PSSnapin Citrix*
-
-$DDC= "AZAWVCTXHDCP01"
-$MCVM=Get-Brokermachine -AdminAddress $DDC -ProvisioningType MCS
-$MC=$MCVM.CatalogName | select -uniq
-
-$MC| Foreach-object{
-$MCConfig = Get-ProvScheme -AdminAddress $DDC –ProvisioningSchemeName $_ | where {$_.machinecount -gt 0} 
-$MCImage = $MCConfig.MasterImageVM
-$SnapshotFile = split-path -path $MCImage -leaf
-$MasterServer = $snapshotfile.Substring(0,$snapshotfile.indexof("-"))
-$SnapshotPath = split-path -path $MCImage
-$NewSnapshotName = $MasterServer+"-"+$dateStr+".snapshot"
-$NewSnapshotFullPath = $SnapshotPath+"\"+$NewSnapshotName
-Write-Output  $_
-Write-Output  $MasterServer
-Write-Output  $MCImage
-Write-Output  $SnapshotPath
-Write-Output  '=== ### === ### === ### === ###'
-}
-
-###--- verification ---###
-Get-ProvTask |select Status, DateStarted,ProvisioningSchemeName, ProvisioningSchemeUid |sort-object DateStarted
-Get-ProvVM |select  VMName, BootedImage, LastBootTime  |Format-List
 
 
 
