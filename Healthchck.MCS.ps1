@@ -1,51 +1,49 @@
 <### --- Healthcheck v2  --- ###>
 
+$reportMC =@()
 $DDC |ForEach{
-$result=Get-ProvScheme -AdminAddress $_ |where {$_.machinecount -gt 0} 
-$Snapshot=split-path -path $result.MasterImageVM -leaf
-$MC=$result.IdentityPoolName
+$resultMC=Get-ProvScheme -AdminAddress $_ |where {$_.machinecount -gt 0} 
 
-  $report =@()
-  $report= for($i= 0; $i -lt $Result.count; $i++) {  
+  $reportMC =@()
+  $reportMC= for($i= 0; $i -lt $Result.count; $i++) {  
     [PSCustomObject]@{
-    MC= $result[$i].IdentityPoolName
-    ImageUpdate = $result[$i].MasterImageVMDate
-    Snapshot= split-path -path $result[$i].MasterImageVM -leaf
+    MC= $resultMC[$i].IdentityPoolName
+    ImageUpdate = $resultMC[$i].MasterImageVMDate
+    Snapshot= split-path -path $resultMC[$i].MasterImageVM -leaf
     }
   }
-$report |Format-Table
+$reportMC |Format-Table
+}
+
+$reportVM =@()
+$DDC |ForEach{
+$resultVM=Get-ProvVM  |select ProvisioningSchemeName, VMName, AssignedImage, BootedImage, LastBootTime 
+
+  $reportVM =@()
+  $reportVM= for($i= 0; $i -lt $Result.count; $i++) {  
+    [PSCustomObject]@{
+    MC=$resultVM[$i].ProvisioningSchemeName
+    VM=$resultVM[$i].VMName
+    LastBootTime = $resultVM[$i].LastBootTime
+    AssignedImage = split-path -path $resultVM[$i].AssignedImage -leaf
+    BootedImage = split-path -path $resultVM[$i].BootedImage -leaf
+    }
+  }
+$reportVM |format-table -AutoSize
+
 }
 
 
-<### --- verificaiton  --- ###>
-
- Get-ProvTask -MaxRecordCount 9999 | where{$_.Status -eq "Running"} | Stop-ProvTask
- 
 ###--- verification ---###
-Get-ProvTask |select Status, DateStarted,ProvisioningSchemeName, ProvisioningSchemeUid |sort-object DateStarted
-Get-ProvVM |select  VMName, BootedImage, LastBootTime  |Format-List
-
-
-### --- Validation --- ###
 Get-ProvTask -MaxRecordCount 999 |select Status, DateStarted,ProvisioningSchemeName, ProvisioningSchemeUid |sort-object DateStarted
-Get-ProvTask -MaxRecordCount 999 | where {$_.Status -eq “Running”}  |select Status, DateStarted,ProvisioningSchemeName, ProvisioningSchemeUid
-Get-ProvVM |select  VMName, BootedImage, LastBootTime  |Format-List
 
 
+Get-ProvTask -MaxRecordCount 999 | where{$_.Status -eq “Running”} | select Status, DateStarted,ProvisioningSchemeName, ProvisioningSchemeU
+Get-ProvTask -MaxRecordCount 999 | where{$_.Status -eq "Running"} | Stop-ProvTask
+Get-ProvTask -MaxRecordCount 999 | where{$_.Type -eq “DisusedImageCleanup” -and $_.Status -ne “Finished”}
+Get-ProvTask -MaxRecordCount 999 | where{$_.Type -eq “DisusedImageCleanup” -and $_.WorkflowStatus -eq “Terminated”} | Remove-ProvTask
 
-
-### --- Validation --- ###
-Get-ProvTask |select Status, DateStarted,ProvisioningSchemeName, ProvisioningSchemeUid
-Get-ProvTask | where {$_.Status -eq “Running”}
-Get-ProvVM |select  VMName, BootedImage |Format-List
-
-
-Get-ProvTask | where {$_.Type -eq “DisusedImageCleanup” -and $_.Status -ne “Finished”}
-Get-ProvTask | where {$_.Type -eq “DisusedImageCleanup” -and $_.WorkflowStatus -eq “Terminated”} | Remove-ProvTask
-Get-ProvSchemeMasterVMImageHistory  –AdminAddress $DDC –ProvisioningSchemeUid $ProvSchemeGUID –SortBy “Date”
-
- 
- 
+Get-ProvSchemeMasterVMImageHistory  –AdminAddress $DDC –SortBy “Date”
 
 <### --- Health check v1  --- ###>
 
