@@ -5,7 +5,7 @@ $DDC |ForEach{
 $resultMC=Get-ProvScheme -AdminAddress $_ |where {$_.machinecount -gt 0} 
 
   $reportMC =@()
-  $reportMC= for($i= 0; $i -lt $Result.count; $i++) {  
+  $reportMC= for($i= 0; $i -lt $ResultMC.count; $i++) {  
     [PSCustomObject]@{
     MC= $resultMC[$i].IdentityPoolName
     ImageUpdate = $resultMC[$i].MasterImageVMDate
@@ -20,7 +20,7 @@ $DDC |ForEach{
 $resultVM=Get-ProvVM  |select ProvisioningSchemeName, VMName, AssignedImage, BootedImage, LastBootTime 
 
   $reportVM =@()
-  $reportVM= for($i= 0; $i -lt $Result.count; $i++) {  
+  $reportVM= for($i= 0; $i -lt $ResultVM.count; $i++) {  
     [PSCustomObject]@{
     MC=$resultVM[$i].ProvisioningSchemeName
     VM=$resultVM[$i].VMName
