@@ -33,17 +33,17 @@ $reportVM |format-table -AutoSize
 
 }
 
-
 ###--- verification ---###
-Get-ProvTask -MaxRecordCount 999 |select Status, DateStarted,ProvisioningSchemeName, ProvisioningSchemeUid |sort-object DateStarted
-
-
+Get-ProvTask -MaxRecordCount 999 |select Status, DateStarted,ProvisioningSchemeName, ProvisioningSchemeUid, TaskStateInformation |sort-object DateStarted
 Get-ProvTask -MaxRecordCount 999 | where{$_.Status -eq “Running”} | select Status, DateStarted,ProvisioningSchemeName, ProvisioningSchemeU
 Get-ProvTask -MaxRecordCount 999 | where{$_.Status -eq "Running"} | Stop-ProvTask
 Get-ProvTask -MaxRecordCount 999 | where{$_.Type -eq “DisusedImageCleanup” -and $_.Status -ne “Finished”}
 Get-ProvTask -MaxRecordCount 999 | where{$_.Type -eq “DisusedImageCleanup” -and $_.WorkflowStatus -eq “Terminated”} | Remove-ProvTask
-
 Get-ProvSchemeMasterVMImageHistory  –AdminAddress $DDC –SortBy “Date”
+
+###--- remove the error come from terminated task ---###
+Get-ProvTask -MaxRecordCount 999 | where{$_.TaskStateInformation -eq “Terminated”}  | Remove-ProvTask
+
 
 <### --- Health check v1  --- ###>
 
