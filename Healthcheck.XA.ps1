@@ -1,12 +1,8 @@
-###--- check the Xenapp status ---###
-
-$ComputerName = "serverA`r`nServerB`r`nServerC"
-$computerName |out-file serverlist.txt
-
 $parameters = @{
-  ComputerName = Get-Content serverlist.txt
-  ScriptBlock = {Get-Brokermachine -SessionSupport MultiSession}
+  ComputerName = Get-Content VM_DDC_XA.txt
+  ScriptBlock = {Get-Brokermachine -SessionSupport MultiSession -ProvisioningType MCS}
 }
-Invoke-Command @parameters |select CatalogName, DNSName, ImageOutOfDate, InMaintenanceMode, IsAssigned, LoadIndex, SessionCount |Format-table -AutoSize
+
+Invoke-Command @parameters |select CatalogName, DNSName, ImageOutOfDate, InMaintenanceMode, LoadIndex, SessionCount, RegistrationState |Format-table -AutoSize 
 
 ###--- check the Xenapp status ---###
