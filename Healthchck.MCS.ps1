@@ -1,8 +1,8 @@
 <### --- Healthcheck v2  --- ###>
 
 $reportMC =@()
-$DDC |ForEach{
-$resultMC=Get-ProvScheme -AdminAddress $_ |where {$_.machinecount -gt 0} 
+$VM_DDC_XA|ForEach{
+$resultMC=Get-ProvScheme -AdminAddress $_ |where {$_.machinecount -gt 0}  |sort-Object MasterImageVMDate
 
   $reportMC =@()
   $reportMC= for($i= 0; $i -lt $ResultMC.count; $i++) {  
@@ -12,18 +12,19 @@ $resultMC=Get-ProvScheme -AdminAddress $_ |where {$_.machinecount -gt 0}
     Snapshot= split-path -path $resultMC[$i].MasterImageVM -leaf
     }
   }
-$reportMC |Format-Table
+$reportMC
 }
 
 $reportVM =@()
-$DDC |ForEach{
-$resultVM=Get-ProvVM  |select ProvisioningSchemeName, VMName, AssignedImage, BootedImage, LastBootTime 
+$VM_DDC_XA |ForEach{
+$resultVM=Get-ProvVM -AdminAddress $_ |select * |sort-Object ImageOutOfDate, LastBootTime
 
   $reportVM =@()
   $reportVM= for($i= 0; $i -lt $ResultVM.count; $i++) {  
     [PSCustomObject]@{
     MC=$resultVM[$i].ProvisioningSchemeName
     VM=$resultVM[$i].VMName
+    ImageAliged = $resultVM[$i].ImageOutOfDate
     LastBootTime = $resultVM[$i].LastBootTime
     AssignedImage = split-path -path $resultVM[$i].AssignedImage -leaf
     BootedImage = split-path -path $resultVM[$i].BootedImage -leaf
@@ -32,6 +33,7 @@ $resultVM=Get-ProvVM  |select ProvisioningSchemeName, VMName, AssignedImage, Boo
 $reportVM |format-table -AutoSize
 
 }
+
 
 ###--- verification ---###
 Get-ProvTask -MaxRecordCount 999 |select Status, DateStarted,ProvisioningSchemeName, ProvisioningSchemeUid, TaskStateInformation |sort-object DateStarted
