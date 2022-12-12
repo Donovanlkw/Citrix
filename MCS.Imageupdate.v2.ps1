@@ -1,28 +1,3 @@
-#$regioncode= "NonProd/EAS/EAS_EB/EAS_IF/SEA/JPE"
-$regioncode= "NonProd"
-$dateStr = Get-Date -Format "yyyyMMdd"
-****
-
-<### --- this is the MC need updated list ---###>
-$MCPreProd= Get-Content MC_PreProd_$regioncode.txt
-$MCProd= Get-Content MC_Prod_$regioncode.txt
-$ComputerName = Get-Content VM_Master_$regioncode.txt
-
-fill in 
-if ($regioncode -like "EAS"){
-$location="Eastasia"
-$DDC="xxx"
-}elseif ($regioncode -eq "SEA"){
-$location="Southeastasia"
-$DDC="xxx"
-}elseif ($regioncode -eq "JPE"){
-$location="Japaneast"
-$DDC="xxx"
-}elseif ($regioncode -eq "NonProd"){
-$location="Eastasia"
-$DDC="xxx"
-}
-
 ###--- Step 1, power Off all master in Studio --- ###
 $ComputerName| Foreach-object {
 New-BrokerHostingPowerAction -AdminAddress $DDC -Action Shutdown -MachineName $_
