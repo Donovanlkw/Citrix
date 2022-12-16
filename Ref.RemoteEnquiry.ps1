@@ -1,3 +1,5 @@
+###--- sample of remote execute ---###
+
 $ComputerName = "serverA`r`nServerB`r`nServerC"
 $computerName |out-file serverlist.txt
 
