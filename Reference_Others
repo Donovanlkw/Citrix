@@ -1,14 +1,1 @@
-#----- common command 
 
-get-command  -Verb get -noun AD*Service* 
-Import-module  
-Get-help *  
-Get-history 
- 
-#----- Execute a command -----#   
-Start-Process -path 'C:\Program Files (x86)\Google\Chrome\ Application\chrome.exe'   
-
-#----- Others -----#   
-
-Get-eventlog-LogName application 
-Get-eventlog-LogName system 
