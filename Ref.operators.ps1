@@ -1,4 +1,25 @@
+### --- Common Variable --- ###
+$Env: 
+$env:userdnsdomain 
+$Env:COMPUTERNAME 
+$FQNDServerName= [System.Net.Dns]::GetHostByName($env:computerName).HostName 
+
+### --- Variable --- ###
+$OBJ= New-Object -TypeName PSObject
+$OBJ | Add-Member -Name 'Name' -MemberType Noteproperty -Value 'Joe'
+$OBJ | Add-Member -Name 'Age' -MemberType Noteproperty -Value 32
+
+#----- common command
+get-command  -Verb get -noun AD*Service*
+Import-module 
+Get-help * 
+Get-history
+
+
+Get-Variable | Out-String 
+
 |Format-Table -AutoSize  
+|Out-GridView
 |FT  
 |ConvertTo-Json |Out-file 'C:\test.json' 
 
@@ -19,6 +40,8 @@ Get-ADGROUPmember GroupName |get-ADUser -properties * | Select Name,Created
 -notlike     Means: not like     Example: -notlike "stopped" or -notlike "St*" or -notlike "*oppe*" 
 -ge    Means: Greater or equal    Example: -ge 200 (Greater or equal to 200) or (>=200) 
 -gt    Means: Greater than Example: -gt 200 (Greater than 200) or (>200) 
+
+
   
 ###--- Output  ---###
 
@@ -27,3 +50,18 @@ Write-Output
 Write-Error 
 
 ###--- Output  ---###
+
+
+
+
+
+################ Logic ################
+
+$StartTime=Get-Date -Year 2019 -Month 11 -Day 1 -Hour 00 -Minute 00
+$EndTime=Get-Date -Year 2020 -Month 11 -Day 1 -Hour 00 -Minute 00
+$hostname="vwts19bk-easd12"
+
+
+
+
+https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_comparison_operators?view=powershell-7.3
