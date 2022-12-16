@@ -1,7 +1,4 @@
-### --- Common Variable --- ###
-$Env: 
-$env:userdnsdomain 
-$Env:COMPUTERNAME 
+### --- Useful Variable --- ###
 $FQNDServerName= [System.Net.Dns]::GetHostByName($env:computerName).HostName 
 
 
