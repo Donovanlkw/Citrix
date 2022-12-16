@@ -39,9 +39,21 @@ Second= $Second[$i]
 
 $report
 
-### ---  combine two Array variable into a Table --- ###
 
+$reportMC =@()
+$VM_DDC_XA|ForEach{
+$resultMC=Get-ProvScheme -AdminAddress $_ |where {$_.machinecount -gt 0}  |sort-Object MasterImageVMDate
 
+  $reportMC =@()
+  $reportMC= for($i= 0; $i -lt $ResultMC.count; $i++) {  
+    [PSCustomObject]@{
+    MC= $resultMC[$i].IdentityPoolName
+    ImageUpdate = $resultMC[$i].MasterImageVMDate
+    Snapshot= split-path -path $resultMC[$i].MasterImageVM -leaf
+    }
+  }
+$reportMC
+}
 
 
 
