@@ -1,3 +1,6 @@
+https://support.citrix.com/article/CTX109262/basic-unix-commands-for-netscaler
+
+
 ### --- check the disk space in netscaler --- ###
 df-h
 du -sh /var/* | sort -nr | grep G 
