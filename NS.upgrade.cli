@@ -1,0 +1,22 @@
+Validation
+1. check saved and running configurations
+2. Backup /flash/nsconfig/ns.conf
+3. Take full backup from NetScaler GUI and save it locally
+4. Make sure \var directory have 35 to 40 % of free space available before the upgrade (clean crash file)
+5. capture the vserver and service status before upgrade.
+6. Generate tech support bundle before the upgrade, 
+Perform health check from user side. 
+7. upgrade the license file
+
+
+Implementation:
+save config
+shell
+cd /nsconfig
+cp ns.conf ns.conf.NS<currentreleasenumber><currentbuildnumber>
+cd /var/nsinstall/<releasenumber>
+tar –xvzf build-13.1-37.2_nc_64.tgz
+./installns
+
+https://docs.citrix.com/en-us/citrix-adc/current-release/upgrade-downgrade-citrix-adc-appliance/upgrade-standalone-appliance.html
+
