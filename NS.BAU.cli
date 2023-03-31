@@ -1,0 +1,86 @@
+### --- check the disk space in netscaler --- ###
+df-h
+du -sh /var/* | sort -nr | grep G 
+https://support.citrix.com/article/CTX236037/troubleshooting-netscaler-hard-disk-issues
+
+### --- Configure Log File Rotation  --- ###
+cat /etc/newsyslog.conf
+https://support.citrix.com/article/CTX121898/how-to-configure-log-file-rotation-on-netscaler
+
+### --- common command for troubleshooting  --- ###
+show ns info
+show version
+show hardware
+Show interface
+show ns ip
+show route
+show ha node
+
+### --- read Log  --- ###
+cat /var/log/ns.log (read the ns.log file)
+
+nsconmsg -K newnslog -d event (view the newnslog file)
+nsconmsg -K newnslog -d consmsg (view the console messages)
+nsconmsg -d current -g pol_hits (View the policy hits for a user logging in and connecting)
+cd /tmp cat aaad.debug (View authentication information)
+
+### --- Important  locations on the Netscaler  --- ###
+cd /var/log
+cd /var/nslog
+cd /var/crash
+cd /var/core
+cd /nsconfig
+cd /nsconfig/ssl
+cd /nsconfig/license
+
+### --- Important  locations on the Netscaler  --- ###
+stat aaa
+stat lb vserver
+stat ssl
+
+<### --- Backup CLI --- ###>
+save ns config
+create system backup [<fileName>] -level ful
+
+
+<### --- Basic Backup --- ###>
+/nsconfig/ 
+ns.conf 
+ZebOS.conf 
+rc.netscaler 
+snmpd.conf 
+nsbefore.sh 
+nsafter.sh 
+monitors 
+
+/var/ * 
+download/* 
+log/wicmd.log
+wi/tomcat/webapps/*
+wi/tomcat/logs/*
+wi/tomcat/conf/catalina/localhost/*
+nslw.bin/etc/krb.conf
+nslw.bin/etc/krb.keytab
+netscaler/locdb/*
+lib/likewise/db/*
+vpn/bookmark/*
+netscaler/crl
+nstemplates/*
+learnt_data/* 
+
+/netscaler/
+custom.html
+vsr.htm
+
+
+<### --- Full Backup --- ###>
+/nsconfig/ 
+ssl/*
+license/*
+fips/* 
+
+/var/
+netscaler/ssl/*
+wi/java_home/jre/lib/security/cacerts/*
+wi/java_home/lib/security/cacerts/*
+
