@@ -15,7 +15,7 @@ New-BrokerCatalog -AdminAddress $AdminAddress -Name $MC -SessionSupport MultiSes
 New-Brokermachine -MachineName $vm -CatalogUid (get-brokercatalog -name $MC).Uid
 
 ###--- Create a DG for Production --- ### 
-New-BrokerDesktopGroup -AdminAddress $AdminAddress -Name $DG -DeliveryType DesktopsAndApps -SessionSupport MultiSession -desktop Shared -SecureIcaRequired $true -timezone "China Standard Time" -PublishedName $dgname
+New-BrokerDesktopGroup -AdminAddress $AdminAddress -Name $DG -DeliveryType DesktopsAndApps -SessionSupport MultiSession -desktop Shared -SecureIcaRequired $true -timezone "China Standard Time" -PublishedName $DG
 $DesktopGroupUid=(Get-BrokerDesktopGroup -name $DG).Uid
 $DesktopGroupUuid=(Get-BrokerDesktopGroup -name $DG).Uuid
 
