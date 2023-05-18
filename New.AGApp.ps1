@@ -30,6 +30,7 @@ New-BrokerApplication -ApplicationType HostedOnDesktop -Name $_ -CommandLineExec
 }
 
 
+
 ### --- New   Application  ---###
 $app="notepad","mstsc","explorer","cmd"
 $app|foreach{
