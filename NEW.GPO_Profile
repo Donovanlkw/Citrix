@@ -1,0 +1,11 @@
+
+###--- Create Baseline for Computer policies --- ###
+$Name = "Profile"
+$PolicyType = "Computer"
+$PolicyName = $Name+"_"+$PolicyType
+
+cd GP:\$PolicyType
+New-Item $PolicyName
+Set-ItemProperty -Path GP:\$PolicyType\$PolicyName -Name Enabled -Value $true
+
+
