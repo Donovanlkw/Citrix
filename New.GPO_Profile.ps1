@@ -30,11 +30,11 @@ Set-ItemProperty -Path 	GP:\$PolicyType\$PolicyName\Settings\UserProfileManager\
 
 Set-ItemProperty -Path 	GP:\$PolicyType\$PolicyName\Settings\UserProfileManager\ProfileHandling\DeleteCachedProfilesOnLogoff	-Name State -Value Enabled
 Set-ItemProperty -Path 	GP:\$PolicyType\$PolicyName\Settings\UserProfileManager\ProfileHandling\LocalProfileConflictHandling_Part	-Name State -Value Enabled
+Set-ItemProperty -Path 	GP:\$PolicyType\$PolicyName\Settings\UserProfileManager\ProfileHandling\LocalProfileConflictHandling_Part	-Name Value -Value Rename
 Set-ItemProperty -Path 	GP:\$PolicyType\$PolicyName\Settings\UserProfileManager\ProfileHandling\TemplateProfileOverridesLocalProfile	-Name State -Value Enabled
 Set-ItemProperty -Path 	GP:\$PolicyType\$PolicyName\Settings\UserProfileManager\ProfileHandling\TemplateProfileOverridesRoamingProfile	-Name State -Value Enabled
 Set-ItemProperty -Path 	GP:\$PolicyType\$PolicyName\Settings\UserProfileManager\ProfileHandling\TemplateProfilePath	-Name State -Value Enabled
 Set-ItemProperty -Path 	GP:\$PolicyType\$PolicyName\Settings\UserProfileManager\ProfileHandling\TemplateProfilePath -Name Value -Value $TemplateProfilePath
-
 
 Set-ItemProperty -Path 	GP:\$PolicyType\$PolicyName\Settings\UserProfileManager\LogSettings\DebugMode	-Name State -Value Enabled
 Set-ItemProperty -Path 	GP:\$PolicyType\$PolicyName\Settings\UserProfileManager\LogSettings\LogLevel_ActiveDirectoryActions	-Name State -Value Enabled
