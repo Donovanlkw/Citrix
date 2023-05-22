@@ -1,5 +1,3 @@
-
-
 ### --- Citrix policy ---###
 # https://developer-docs.citrix.com/projects/citrix-virtual-apps-desktops-sdk/en/latest/group-policy-sdk-usage/
 # https://docs.citrix.com/en-us/citrix-virtual-apps-desktops/policies/policies-default-settings.html
@@ -16,17 +14,6 @@ $PolicyName = $Name+"_"+$PolicyType
 
 $Profilepath="\\AZWFSNCTXSDFS01\azwapnctxdfs\CTXProfiles"
 $TemplateProfilePath="\\AZWFSNCTXSDFS01\azwapnctxdfs\CTXProfiles"
-
-
-AppData\Roaming\Microsoft\Credentials
-AppData\Roaming\Microsoft\Crypto
-AppData\Roaming\Microsoft\Protect
-AppData\Roaming\Microsoft\SystemCertificates
-AppData\Local\Microsoft\Credentials
-AppData\Roaming\Microsoft\Excel\XLSTART
-AppData\Roaming\Microsoft\Word\STARTUP
-AppData\LocalLow\Sun\Java\Deployment\ext
-AppData\LocalLow\Sun\Java\Deployment\security
 
 cd GP:\$PolicyType
 New-Item $PolicyName
