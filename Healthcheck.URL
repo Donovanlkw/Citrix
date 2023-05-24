@@ -1,0 +1,15 @@
+invoke-WebRequest 'www.google.com'
+invoke-RestMethod 'www.google.com'
+
+<# Testing #>
+$URI='www.google.com'
+
+
+$UserName = "abs" 
+
+
+USERNAME
+
+$secPw = ConvertTo-SecureString '@7o8K3BGvkJb<.-R*}M-' -AsPlainText -Force
+$creds = New-Object System.Management.Automation.PSCredential -ArgumentList 'MFCGD\asiactxadm01', $secPw
+$res = Invoke-WebRequest -Uri $URI 
