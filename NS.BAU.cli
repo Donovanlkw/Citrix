@@ -1,6 +1,33 @@
 https://support.citrix.com/article/CTX109262/basic-unix-commands-for-netscaler
 
 
+AAA Troubleshooing. 
+#shell
+
+
+GUI, authentication Log.
+
+
+admin. Partition.
+
+
+syslog:  /var/log/ns.log, 
+syslog:  audit and event, 
+
+nslog:  /var/nslog/newnslog
+nslog:  Performance and debug.  
+Shell # nsconmsg
+
+Network Traffic  /var/nstrace
+/nestrace.sh
+
+DNS syslog
+External Audit policies.
+
+AppFlow.
+
+
+
 ### --- check the disk space in netscaler --- ###
 df-h
 du -sh /var/* | sort -nr | grep G 
