@@ -3,4 +3,110 @@ https://support.citrix.com/article/CTX219638
 add ns acl MGNTACL1 ALLOW -srcIP = 192.168.1.72 -destIP = 192.168.1.99 -priority 5 -kernelstate SFAPPLIED61 
 add ns acl MGNTACL2 DENY -destIP = 192.168.1.72 -destPort = 80 -protocol TCP -priority 7 -kernelstate SFAPPLIED61 
 
+1. Enable the ICASecure
+
+Netscaler
+Network Security. 
+2.1 
+Ensure to impplement network segmentation. At a minimum Dev and Prod Citrix Netscaler Cluster must be segmented.
+2.2
+there mus non be any traffic flow among the non-production and production cluster. 
+2.3. 
+Network traffic to the netscaler appliance managment inter  must be physcially or logically separated from normal network traffce. 
+the recommended best practices is the have three VLANs.
+Outside Itnernet VLAN
+Managment VLAN
+Inside Server VLAN
+2.4. 
+Ensure the configure network to make the LOM port par of the mangement VLAN
+2.5. 
+the NSIP must not be exposed to the public internet. 
+2.6
+the NS default SSL certificte must be replace. 
+2.7.
+disable http Access to GUI
+sh ns ip  |grep gui
+gui: SecurityOnly
+2.8. 
+disabl HTTP access to the admin interface. Ensure 2048 bit  RSA private and public key pair and 
+replacing the factory provisionied 512 bit RSA private and public key pair. 
+2.9
+Ensure the NS appliance to use only TLS1.2 or hiher cipher. 
+check SSL profile in GUI.
+2.10
+configure the appliance to use SSH public key authentcation to adm interface. 
+do not use netscaler default. create and use own 2048-bit RSA private and public key pair.
+2.11
+Ensure to configure the netscaler with "deny all pllicy"
+> sh vpn parameter
+2.12. 
+TLS1.2 is used link Between Netscaler Gateway appliance and other services. 
+2.13.
+Disable SSH Port Forwarding
+2.14. 
+Ensure to restric the ability of non-management applications to access a Netscaler appliance.
+>set ns ip <NSIP> -restrictAccess enabled.
+>sh ns ip x.x.x.x|grep -i restrict
+2.15.
+If there is a HA deployment, ensure to secure RPC for Node to Node Messaging (NNM)
+>set rpcnode <x.x.x.x> -secure on
+>sh ns rpcnode
+2.16. 
+ensure to enable HTTPOnly for cookies set by the netscaler or backend server. 
+>sh lb parameter.
+2.17. 
+if the IP forwarding feature is not in use, disable L3 mode.
+> disable ns mode L3.
+2. 18. 
+use secure MEP for GSLB
+> set rpcNode <GSLB setie IP> -secure yes.
+
+
+Administration and managmenet. 
+3.1. 
+Change Password of the nsroot.
+3.2
+System user password must meet the password requirements
+3.3. 
+All Privilege ID, must on-boarded uder password vault with MFA.
+3.4.
+Least privilege principle must be applied.
+
+
+System Configuration.
+4.1. 
+create the system master key for datat protection.
+4.2 
+Ensure to use Netscale limiti access to the appliance to the GUI only.
+4.3. 
+Configure system session timeout to 10 mins. 
+> show cli mode.
+4.4. 
+Disable unused protocols. (FTP, Telnt, DNS, DHCP)
+>sh ns feature |grep ON
+4.5. 
+Disable remote assitance , 
+4.6. 
+NTP authentication-Specify that tht NTP service is enabled.
+> sh ntp sync
+> sh ntp status
+4.7
+ensure SNMPv2 is disabled, only SNMPv3 is allowed.
+4.8. 
+Ensure to configure netscaler to drop invalid http requied.
+>sh ns httpprofile.
+4.9 
+Ensure to configure protection against DDoS.
+4.10
+ensure to configure NS tp defend against tcp spoofing attacks
+4.11
+Ensure to configure NS to accept specific HTTPS headers.
+4.12
+Ensure to configure DNSSec Seucirty
+4.13
+Ensure SNMP Alarm for DNSSEC Key Expiration.
+
+
+5. Logging and Monitoring.
+5.1 Enable logging to local and remote Audit Server.
 
