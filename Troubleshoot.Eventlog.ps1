@@ -1,3 +1,17 @@
+#----- Collect all log from server group in last 7 days-----# 
+$StartTime=(Get-date).AddDays(-7)
+$EndTime= Get-date
+$LogName="system"
+$eventid="12"
+$ProviderName="rpm"
+$ComputerName = Get-Content serverlist.txt
+
+$Alllog=ForEach ($Server in $ComputerName) {
+Get-WinEvent -ComputerName $server -FilterHashTable @{LogName=$LogName;ID=$eventid;StartTime=$StartTime;EndTime=$EndTime;ProviderName=$ProviderName} |select MachineName, LogName, Provide,id,TimeCreated,Message |format-table
+}
+
+
+##########################################################
 #----- Get the RDS Logon in last 7 days-----# 
 $StartTime=(Get-date).AddDays(-7)
 $EndTime= Get-date
@@ -5,8 +19,8 @@ $LogName="Security"
 $eventid="4624"
 $hostname=$env:computername
 
-
 $Winevent=Get-WinEvent -ComputerName $hostname -FilterHashTable @{LogName=$LogName;ID=$eventid;StartTime=$StartTime;EndTime=$EndTime} 
+
 $Events =$winevent | ?{$_.Message -match 'logon type:\s+(10)\s'}| ForEach-Object {
     $Values = $_.Properties | ForEach-Object { $_.Value }
     
