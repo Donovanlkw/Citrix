@@ -1,0 +1,38 @@
+
+#if ($TeamsHDX) {
+#Write-host "$env:computername" + "  HDX-Opt"
+#}else{
+#$env:COMPUTERNAME
+#query user 
+#}
+
+get-cimclass -Namespace root\Citrix\EUEM
+Get-CimInstance -ComputerName xxxx  -Namespace root\Citrix\EUEM -ClassName Citrix_Euem_RoundTrip  
+
+
+Get-CimInstance -ComputerName xxxx  -Namespace root\Citrix\EUEM -ClassName Citrix_Euem_ClientStartup   
+Get-CimInstance -ComputerName xxxx  -Namespace root\Citrix\EUEM -ClassName Citrix_Euem_Updated
+
+Get-CimInstance -ComputerName xxxx  -Namespace root\Citrix\EUEM -ClassName Citrix_Euem_Updated
+Get-CimInstance -ComputerName xxxx  -Namespace root\Citrix\EUEM -ClassName Citrix_Euem
+Get-CimInstance -ComputerName xxxx  -Namespace root\Citrix\EUEM -ClassName Citrix_Euem_RoundTrip
+Get-CimInstance -ComputerName xxxx  -Namespace root\Citrix\EUEM -ClassName Citrix_Euem_ClientStartup
+Get-CimInstance -ComputerName xxxx  -Namespace root\Citrix\EUEM -ClassName Citrix_Euem_ServerStartup
+Get-CimInstance -ComputerName xxxx  -Namespace root\Citrix\EUEM -ClassName Citrix_Euem_ApplicationLaunch
+Get-CimInstance -ComputerName xxxx  -Namespace root\Citrix\EUEM -ClassName Citrix_Euem_SessionTerminate 
+Get-CimInstance -ComputerName xxxx  -Namespace root\Citrix\EUEM -ClassName Citrix_Euem_AutoReconnect    
+Get-CimInstance -ComputerName xxxx  -Namespace root\Citrix\EUEM -ClassName Citrix_Euem_UnresponsiveApplication
+Get-CimInstance -ComputerName xxxx  -Namespace root\Citrix\EUEM -ClassName Citrix_Euem_ClientConnect          
+Get-CimInstance -ComputerName xxxx  -Namespace root\Citrix\EUEM -ClassName Citrix_Euem_ClientDisconnect       
+
+Citrix_Euem_Updated
+Citrix_Euem
+Citrix_Euem_RoundTrip
+Citrix_Euem_ClientStartup
+Citrix_Euem_ServerStartup
+Citrix_Euem_ApplicationLaunch
+Citrix_Euem_SessionTerminate 
+Citrix_Euem_AutoReconnect    
+Citrix_Euem_UnresponsiveApplication
+Citrix_Euem_ClientConnect          
+Citrix_Euem_ClientDisconnect       
