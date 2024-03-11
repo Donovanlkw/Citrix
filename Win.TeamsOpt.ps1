@@ -1,14 +1,30 @@
-$DG= ""
+$DG=""
+
 $today=Get-Date -f "yyyyMMdd"
 
 ###--- query all the DG VDI
-$VDI=get-brokerdesktop -DesktopGroupName $DG -MaxRecordCount 99999 -SessionState "active"
-$VDI.dnsname |out-file VDIlist_$DG"_"$today.txt
+
+$VDI=get-brokersession -MaxRecordCount 99999 -SessionState "active" -Protocol "HDX"
+$ActiveVDI=$VDI
+$ActiveVDI|select UserUPN, DNSName,  BrokeringTime, AgentVersion, ClientPlatform, ClientName, ClientVersion, ConnectedViaIP, SessionState |ft|out-file VDIsession_$DG"_"$today.txt
+$ActiveVDI.dnsname |out-file VDIlist_$DG"_"$today.txt
+
+
+###--- query active Computername by email .
+$userlist = Get-Content userlist.txt
+$DG=""
+$VDI=get-brokersession -MaxRecordCount 99999 -SessionState "active" -Protocol "HDX"
+
+$ActiveVDI=$Userlist| Foreach-object {
+$VDI |where UserUPN -eq $_ 
+}
+
+$ActiveVDI|select UserUPN, DNSName,  BrokeringTime, AgentVersion, ClientPlatform, ClientName, ClientVersion, ConnectedViaIP, SessionState |sort DNSName|ft |out-file VDIsession_$DG"_"$today.txt
+$ActiveVDI.dnsname |sort |out-file VDIlist_$DG"_"$today.txt
 
 
 ### --- MS Teams optimization validation webScoketAgent  --- ###
 
-$DG= "EMEA"
 $today=Get-Date -f "yyyyMMdd"
 $ComputerName = Get-Content VDIlist_$DG"_"$today.txt
 
