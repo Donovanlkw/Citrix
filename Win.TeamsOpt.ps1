@@ -1,72 +1,100 @@
 $DG=""
-
-$today=Get-Date -f "yyyyMMdd"
-
 $Today=Get-Date -f "yyyyMMdd"
-
-$VDI=get-brokersession -MaxRecordCount 99999 -SessionState "active" -Protocol "HDX" -OSType "Windows 10"
-
-
-###--- query all the DG VDI
-
-$VDI=get-brokersession -MaxRecordCount 99999 -SessionState "active" -Protocol "HDX" -OSType "Windows 10"
-$ActiveVDI=$VDI |where Desktopgroup -eq $DG
-$ActiveVDI|select UserUPN, DNSName,  BrokeringTime, AgentVersion, ClientPlatform, ClientName, ClientVersion, ConnectedViaIP, SessionState |ft|out-file VDIsession_$DG"_"$today.txt
-$ActiveVDI.dnsname |out-file VDIlist_$DG"_"$today.txt
-
-
-###--- query active Computername by email .
+$XD=get-brokersession -MaxRecordCount 99999 -SessionState "active" -Protocol "HDX" -OSType "Windows 10"
 $userlist = Get-Content userlist.txt
-$DG=""
-$VDI=get-brokersession -MaxRecordCount 99999 -SessionState "active" -Protocol "HDX" -OSType "Windows 10"
-
-$ActiveVDI=$Userlist| Foreach-object {
-$VDI |where UserUPN -eq $_ 
-}
-
-$ActiveVDI|select UserUPN, DNSName,  BrokeringTime, AgentVersion, ClientPlatform, ClientName, ClientVersion, ConnectedViaIP, SessionState |sort DNSName|ft |out-file VDIsession_$DG"_"$today.txt
-$ActiveVDI.dnsname |sort |out-file VDIlist_$DG"_"$today.txt
 
 
+    ###--- query Active VDI in particular DG
+    $ActiveVDI=$XD |where Desktopgroup -eq $DG*
+
+
+    ###--- query Active VDI which match the userlist(email)
+    $userlist = Get-Content userlist.txt
+    $ActiveVDI=$Userlist| Foreach-object {
+    $XD |where UserUPN -eq $_ 
+    }
+
+###--- Generate Report.
+
+$ActiveVDI|select UserUPN, DNSName, DesktopGroupName, BrokeringTime, AgentVersion, ClientPlatform, ClientName, ClientVersion, ConnectedViaIP, SessionState |sort DNSName|ft |out-file VDIsession_$DG"_"$today.txt
+$ActiveVDI.dnsname |sort |out-file "VDIlist_$DG_$today.txt"
+
+#########################################################################################################
 
 
 ### --- MS Teams optimization validation webScoketAgent  --- ###
-$ComputerName = Get-Content VDIlist_$DG"_"$today.txt
+$ComputerName = Get-Content  "VDIlist_$DG_$today.txt"
 
 $TeamsOptState=$ComputerName| Foreach-object {
 $TeamsOpt=Get-process -computername $_ -name WebSocketAgent |select Name
 Write-Output "$_ + $TeamsOpt"
 Write-host "$_ + $TeamsOpt"
 }
-$TeamsOptState |select-string -AllMatch websocketagent |out-file TeamsOpt_$DG"_"$today.txt
-$TeamsOptState.replace(" + ", "")|select-string -NotMatch websocketagent |out-file TeamsOptFailure_$DG"_"$today.txt
+$TeamsOptState |select-string -AllMatch websocketagent |out-file "TeamsOpt_$DG_$today.txt"
+$TeamsOptState.replace(" + ", "")|select-string -NotMatch websocketagent |out-file "TeamsOptFailure_$DG_$today.txt"
+
+
+#########################################################################################################
+
+
+### --- MS Teams runnin in VDI mode ?  --- ###
+$ComputerName = Get-Content "TeamsOptFailure_$DG_$today.txt"
+$TeamsVDIMode=$ComputerName| Foreach-object {
+$TeamsVDI=((Get-process -computername $_ -name ms-teams).modules).filename |select-string -AllMatche SlimCore
+Write-Output "$_ + $TeamsVDI"
+Write-host "$_ + $TeamsOpt"
+}
+$TeamsVDIMode
+
+
+#$TeamsOptState |select-string -AllMatch websocketagent |out-file "TeamsOpt_$DG_$today.txt"
+#$TeamsOptState.replace(" + ", "")|select-string -NotMatch websocketagent |out-file "TeamsOptFailure_$DG_$today.txt"
+
+### --- MS Teams optimization Troubelshooting in Level 2, check the starttime of Ms-Teams, --- ###
+$ComputerName = Get-Content "TeamsOptFailure_$DG_$today.txt"
+
+$TeamsStartupTime=$ComputerName| Foreach-object {
+Invoke-Command -Computer $_ -ScriptBlock {
+get-process -name ms-Teams |select starttime 
+}
+}
+$TeamsStartupTime|sort Starttime|out-file "TeamsStartupTime_$DG_$today.txt"
+
 
 
 ### --- MS Teams optimization Troubelshooting in details  --- ###
-$ComputerName = Get-Content TeamsOptFailure_$DG"_"$today.txt
+$ComputerName = Get-Content "TeamsOptFailure_$DG_$today.txt"
 
 $ComputerName| Foreach-object {
 Invoke-Command -Computer $_ -ScriptBlock {
-Get-ItemProperty -Path "HKLM:SOFTWARE\WOW6432Node\Citrix\WebSocketService"
-#Get-ItemProperty -Path "HKLM:SOFTWARE\Microsoft\Teams"
-#Get-ItemProperty -Path "HKCU:SOFTWARE\Citrix\HDXMediaStream"
-Get-Process  -Name web*
-get-process -name web* |select PSComputerName,Name, productversion, starttime |ft
-get-process -name Teams* |select PSComputerName, Name, productversion, starttime, startinfo |ft
-get-process -name ms-Teams* |select startinfo |ft
+Write-host "$env:computername"
+get-service -displayname "Citrix HDX*"
 netstat -na |findstr 9002
+(Get-ItemProperty -Path "HKLM:SOFTWARE\WOW6432Node\Citrix\WebSocketService").Processwhitelist
+(Get-ItemProperty -Path "HKLM:SOFTWARE\Microsoft\Teams").VDIOptimizationMode
+Get-ItemProperty -Path "HKCU:SOFTWARE\Citrix\HDXMediaStream"
+(Get-CimInstance -Class win32_operatingsystem).lastbootuptime
+get-process -name ms-Teams |select starttime
+#get-process -name WebSocket*
+Get-process -name Teams
+#get-process -name web* |select PSComputerName,Name, productversion, starttime |ft
+#get-process -name Teams* |select PSComputerName, Name, productversion, starttime, startinfo |ft
+#get-process -name ms-Teams* |select startinfo |ft
+}
+}
 
-}
-}
+
 
 
 ###--- query problem 's VDI issue. 
 
-$ComputerName = Get-Content TeamsOptFailure.txt
+$ComputerName = Get-Content EMEATeamsOptFailure.txt
 
 $TeamsUsers = $ComputerName| Foreach-object {
 Get-Brokersession -dnsname $_ |select userupn, BrokeringTime, ClientName, ClientVersion, AgentVersion, SessionState
 }
 
 $TeamsUsers |ft 
+
+
 
