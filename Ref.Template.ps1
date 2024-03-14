@@ -20,21 +20,6 @@ Get-Content -Path $file| Format-Table -AutoSize
 Start-Process -path 'C:\Program Files (x86)\Google\Chrome\ Application\chrome.exe'
 
 
-
-
-#----- Create a schedule Task in Admin. Tools.  
-$file = "c:\temp\$task.ps1"   
-Get-ScheduledTask  
-$resumeActionscript = "-WindowStyle Normal -NoLogo -NoProfile -File $file"  
-$act = New-ScheduledTaskAction -Execute "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" -Argument $resumeActionscript  
-$trig = New-ScheduledTaskTrigger -AtStartup  
-Register-ScheduledTask -TaskName $task -user $user -password $pwd -Action $act -Trigger $trig -RunLevel Highest  
-
-
-#----- Create a schedule Task in Admin. Tools.
-
-
-
 ############## Parameter pass to extension script ##############
 $argument = " -brokerServer $BrokerServer -CollectionName $CollectionName -user $DomainuserName -pwd $Domainpassword -task $task "
 $argument = $argument + " -vmssName $VMSSName "
@@ -59,15 +44,7 @@ Add-Content $file '"'
 
 Add-Content $file '
 '
-############## 
 
-#----- Create a auto run RDS Configuration  
-
-Get-ScheduledTask   
-$resumeActionscript = "-WindowStyle Normal -NoLogo -NoProfile -File $file"   
-$act = New-ScheduledTaskAction -Execute "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" -Argument $resumeActionscript   
-$trig = New-ScheduledTaskTrigger -AtStartup   
-Register-ScheduledTask -TaskName $task -user $user -password $pwd -Action $act -Trigger $trig -RunLevel Highest  
 
 
 ### create a local file for schedule task   
