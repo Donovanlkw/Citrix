@@ -14,6 +14,7 @@ $act = New-ScheduledTaskAction -Execute "C:\Windows\System32\WindowsPowerShell\v
 $trig = New-ScheduledTaskTrigger -AtStartup   
 Register-ScheduledTask -TaskName $task -user $user -password $pwd -Action $act -Trigger $trig -RunLevel Highest  
 
+#----- Create a schedule Task in Admin. Tools.
 
 
 
