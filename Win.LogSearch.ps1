@@ -14,8 +14,9 @@ $logoutput =$Log|select MachineName, LogName, Providername,id,TimeCreated,Messag
 }
 # $rpm= Get-eventlog -logname system -source rpm -after 1/20/2024 
 
+#----- Collect all log from server group in last n days-----# 
 
-
+### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- 
 
 #----- Get the RDS Logon in last 7 days-----# 
 $StartTime=(Get-date).AddDays(-7)
