@@ -1,0 +1,96 @@
+$GPOName ="xxx"
+[xml]$GPO=Get-GPOreport -name $GPOName -ReportType XML
+
+$file=""
+#[xml]$xml=Get-Content $file
+
+$GPOName = "CitrixFASSettings"
+[xml]$GPO=Get-GPOreport -name "$GPOName" -ReportType XML
+
+### --- namespace defintion for GPO
+$NameSpace = @{
+GPO='http://www.microsoft.com/GroupPolicy/Settings'
+Environment='http://www.microsoft.com/GroupPolicy/Settings/Environment'
+Lugs='http://www.microsoft.com/GroupPolicy/Settings/Lugs'
+Security='http://www.microsoft.com/GroupPolicy/Settings/Security'
+Auditing='http://www.microsoft.com/GroupPolicy/Settings/Auditing'
+Services="http://www.microsoft.com/GroupPolicy/Settings/Services"
+SoftwareInstallation="http://www.microsoft.com/GroupPolicy/Settings/SoftwareInstallation"
+WindowsFirewall='http://www.microsoft.com/GroupPolicy/Settings/WindowsFirewall'
+nrpt='http://www.microsoft.com/GroupPolicy/Settings/nrpt'
+Scripts='http://www.microsoft.com/GroupPolicy/Settings/Scripts'
+Policy='http://www.microsoft.com/GroupPolicy/Settings/Registry'
+RegistrySettings='http://www.microsoft.com/GroupPolicy/Settings/Windows/Registry' 
+IE="http://www.microsoft.com/GroupPolicy/Settings/IE"
+}
+
+$Account= (select-xml -xml $gpo -namespace $NameSpace -xpath "//Security:Account").node  |select name, SettingNumber, SettingBoolean
+
+$UserRightsAssignment= (select-xml -xml $gpo -namespace $NameSpace -xpath "//Security:UserRightsAssignment").node  |select -property `
+    name, @{name='Member'; Expression={$_.member.name.'#text'}}
+
+$SecurityOptions=(select-xml -xml $gpo -namespace $NameSpace -xpath "//Security:SecurityOptions").node | select -property `
+    @{name='Name'; Expression={$_.Display.Name} }, `
+    SettingString, SettingNumber, KeyName |ft
+
+<#
+$Account
+$UserRightsAssignment
+$SecurityOptions
+$Auditing
+#>
+
+(select-xml -xml $gpo -namespace $NameSpace -xpath "//Security:Account").node  |ft
+(select-xml -xml $gpo -namespace $NameSpace -xpath "//Security:UserRightsAssignment").node |ft
+(select-xml -xml $gpo -namespace $NameSpace -xpath "//Security:SecurityOptions").node  |ft
+(select-xml -xml $gpo -namespace $NameSpace -xpath "//Services:NTServices").node  |ft
+(select-xml -xml $gpo -namespace $NameSpace -xpath "//RegistrySettings:RegistrySettings").node | ft
+(select-xml -xml $gpo -namespace $NameSpace -xpath "//Scripts:Scripts").node | ft
+(select-xml -xml $gpo -namespace $NameSpace -xpath "//Policy:Policy").node | ft
+
+
+
+#Windows Firewall with Advanced Security
+$Computer[2].Extension.ChildNodes[0].ChildNodes |select ParentNode, localname, value |ft
+$Computer[2].Extension.ChildNodes[1].ChildNodes |select ParentNode, localname, value |ft
+$Computer[2].Extension.ChildNodes[2].ChildNodes |select ParentNode, localname, value |ft
+$Computer[2].Extension.ChildNodes[3].ChildNodes |select ParentNode, localname, value |ft
+$Computer[2].Extension.ChildNodes[4] |ft
+$Computer[2].Extension.ChildNodes[5] |ft
+
+#NameResolutionPolicy
+$Computer[3].Extension.ChildNodes |ft
+
+#Registry/Administrative Templates
+$Computer[4].Extension.Policy |select name, state, Category |ft
+$Computer[4].Extension.Policy |select name, state, Category,  @{name='Configure'; Expression={$_.DropDownList.Name}},  @{name='x'; Expression={$_.DropDownList.State}}|ft
+
+
+
+
+$gporeport.gettype() | ft -auto
+$xmlReport = New-Object system.xml.xmldocument
+$xmlReport.LoadXml($GPOReport)
+
+$Account= (select-xml -xml $gpo -namespace $NameSpace -xpath "//Security:Account").node  |select name, SettingNumber, SettingBoolean
+
+$UserRightsAssignment= (select-xml -xml $gpo -namespace $NameSpace -xpath "//Security:UserRightsAssignment").node  |select -property `
+    name, @{name='Member'; Expression={$_.member.name.'#text'}}
+
+$SecurityOptions=(select-xml -xml $gpo -namespace $NameSpace -xpath "//Security:SecurityOptions").node | select -property `
+    @{name='Name'; Expression={$_.Display.Name} }, `
+    SettingString, SettingNumber, KeyName |ft
+
+$Account
+$UserRightsAssignment
+$SecurityOptions
+
+
+
+
+
+
+#$xmlReport = New-Object system.xml.xmldocument
+#$xmlReport.LoadXml($GPOReport)
+
+
