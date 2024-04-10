@@ -1,3 +1,8 @@
+$scheduleTask = "CtxRaveRestart"
+Export-ScheduledTask -TaskName $scheduleTask | out-file "C:\$scheduleTask.xml" 
+register-ScheduledTask -TaskName $scheduleTask -xml (get-content "C:\$scheduleTask.xml" |out-string)
+
+
 #----- Create a schedule Task in Admin. Tools.  
 $file = "c:\temp\$task.ps1"   
 Get-ScheduledTask  
