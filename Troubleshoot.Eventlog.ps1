@@ -6,9 +6,14 @@ $eventid="12"
 $ProviderName="rpm"
 $ComputerName = Get-Content serverlist.txt
 
-$Alllog=ForEach ($Server in $ComputerName) {
-Get-WinEvent -ComputerName $server -FilterHashTable @{LogName=$LogName;ID=$eventid;StartTime=$StartTime;EndTime=$EndTime;ProviderName=$ProviderName} |select MachineName, LogName, Provide,id,TimeCreated,Message |format-table
+$Alllog= $ComputerName |ForEach {
+Get-WinEvent -ComputerName $server -FilterHashTable @{LogName=$LogName;ID=$eventid;StartTime=$StartTime;EndTime=$EndTime;ProviderName=$ProviderName} 
 }
+$Alllog |select MachineName, LogName, Provide,id,TimeCreated,Message |format-table
+$Alllog.message
+
+
+
 
 
 ##########################################################
