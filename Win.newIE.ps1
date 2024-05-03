@@ -12,3 +12,7 @@ Sleep 2
 
 
 #https://devblogs.microsoft.com/scripting/use-powershell-to-check-in-for-flight/
+
+
+Chrome.exe  --app=https://www.google.com
+
