@@ -63,29 +63,34 @@ get-process -name ms-Teams |select starttime
 }
 $TeamsStartupTime|sort Starttime|out-file "TeamsStartupTime_$DG_$today.txt"
 
-
+### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### 
 
 ### --- MS Teams optimization Troubelshooting in details  --- ###
 $ComputerName = Get-Content "TeamsOptFailure_$DG_$today.txt"
 
 $ComputerName| Foreach-object {
-Invoke-Command -Computer $_ -ScriptBlock {
-Write-host "$env:computername"
-get-service -displayname "Citrix HDX*"  |select status, Name, Starttype |ft
-netstat -na |findstr 9002
-#(Get-ItemProperty -Path "HKLM:SOFTWARE\WOW6432Node\Citrix\WebSocketService").Processwhitelist
-#(Get-ItemProperty -Path "HKLM:SOFTWARE\Microsoft\Teams").VDIOptimizationMode
-#Get-ItemProperty -Path "HKCU:SOFTWARE\Citrix\HDXMediaStream"
-get-process -name *Teams |select name,starttime,fileversion |ft
-get-process -name WebSocket*|select name,starttime,fileversion |ft
-(Get-CimInstance -Class win32_operatingsystem).lastbootuptime
-#Get-process -name Teams |select Modules
-#$x.Modules |ft |sort filename
-#get-process -name web* |select PSComputerName,Name, productversion, starttime |ft
-#get-process -name Teams* |select PSComputerName, Name, productversion, starttime, startinfo |ft
-#get-process -name ms-Teams* |select startinfo |ft
+    Invoke-Command -Computer $_ -ScriptBlock {
+    Write-host "$env:computername"
+    get-service -displayname "Citrix HDX*"  |select status, Name, Starttype |ft
+    netstat -na |findstr 9002
+    #(Get-ItemProperty -Path "HKLM:SOFTWARE\WOW6432Node\Citrix\WebSocketService").Processwhitelist
+    #(Get-ItemProperty -Path "HKLM:SOFTWARE\Microsoft\Teams").VDIOptimizationMode
+    #Get-ItemProperty -Path "HKCU:SOFTWARE\Citrix\HDXMediaStream"
+    get-process -name *Teams |select name,starttime,fileversion |ft
+    get-process -name WebSocket*|select name,starttime,fileversion |ft
+    (Get-CimInstance -Class win32_operatingsystem).lastbootuptime
+    #Get-process -name Teams |select Modules
+    #$x.Modules |ft |sort filename
+    #get-process -name web* |select PSComputerName,Name, productversion, starttime |ft
+    #get-process -name Teams* |select PSComputerName, Name, productversion, starttime, startinfo |ft
+    #get-process -name ms-Teams* |select startinfo |ft
+    }
 }
-}
+### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### 
+
+
+
+
 
 ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### 
 ### ### ### --- verify Teams Opt all VM in DG --- ### ###  ###
