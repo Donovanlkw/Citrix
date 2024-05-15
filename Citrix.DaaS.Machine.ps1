@@ -8,3 +8,23 @@ $y=$Get-BrokerDesktop -Filter { sessionsupport -eq 'Multisession'} | Select-Obje
 
 $MMServer=Get-BrokerDesktop -Filter {DeliveryType -eq "DesktopsAndApps"}
 $MMServer |select DNSname,  OSType, Desktopgroupname
+
+
+
+### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### 
+### --- Export all VDI mapping.  --- ###
+$AllMapping=@()
+
+$XD| Foreach-object {
+    $computername=$_.DNSName
+    $_.AssociatedUserUPNs | Foreach-object {
+    $mapping = [PsCustomObject]@{
+        Name = $computername
+        UPN = $_
+        }
+    $AllMapping +=$mapping
+    }
+}
+$AllMapping |out-file UsermappingAll.txt
+
+### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### 
