@@ -12,6 +12,12 @@ $VDI=$Userlist| Foreach-object {
     $XD |where AssociatedUserUPNs -eq $_ 
 }
 
+### --- query Active VDI which match the userlist(email)
+$userlist = Get-Content userlist.txt
+$VDI=$Userlist| Foreach-object {
+    $ICA |where UesrUPN -eq $_ 
+}
+
 ###--- Generate Report.
 $VDI|select UserUPN, DNSName, DesktopGroupName, BrokeringTime, AgentVersion, ClientPlatform, ClientName, ClientVersion, ConnectedViaIP, SessionState |sort DNSName|ft |out-file VDIsession_$today.txt
 $VDI.dnsname |sort |out-file VDIlist_$today.txt
