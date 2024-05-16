@@ -1,26 +1,22 @@
 ### --- Collect Data --- ###
 $XA=Get-brokermachine -Sessionsupport  MultiSession
 $XD=Get-brokermachine -MaxRecordCount 99999 -Sessionsupport  SingleSession
-$ICA=Get-BrokerSession -MaxRecordCount 99999 
+$ICA=Get-BrokerSession -MaxRecordCount 99999 -MachineSummaryState Inuse
 $CC=Get-ConfigEdgeServer 
 $DG=get-brokerdesktopgroup
 
-### --- for Particular userlist HDXTeamsOpt  --- ###
-### --- query Active VDI which match the userlist(email)  --- ###
-$userlist = Get-Content userlist.txt
-$VDI=$Userlist| Foreach-object {
-    $XD |where AssociatedUserUPNs -eq $_ 
-}
 
+### --- for Particular userlist HDXTeamsOpt
 ### --- query Active VDI which match the userlist(email)
 $userlist = Get-Content userlist.txt
-$VDI=$Userlist| Foreach-object {
-    $ICA |where UesrUPN -eq $_ 
+$ActiveVDI=$Userlist| Foreach-object {
+    $ICA |where UserUPN -eq $_ 
 }
 
 ###--- Generate Report.
-$VDI|select UserUPN, DNSName, DesktopGroupName, BrokeringTime, AgentVersion, ClientPlatform, ClientName, ClientVersion, ConnectedViaIP, SessionState |sort DNSName|ft |out-file VDIsession_$today.txt
-$VDI.dnsname |sort |out-file VDIlist_$today.txt
+$ActiveVDI|select UserUPN, DNSName, ClientPlatform, ClientName, ClientVersion |sort DNSName|ft |out-file VDIsession_$today.txt
+$ActiveVDI.dnsname |sort |out-file VDIlist_$today.txt
+
 
 ###--- Optional to identifed connected VDI only 
 $VM=get-content VDIlist_$today.txt
