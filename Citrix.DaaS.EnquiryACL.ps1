@@ -5,8 +5,6 @@ Get-BrokerDesktopGroup -filter {InMaintenanceMode -eq "False"}  | ForEach-Object
 Get-BrokerApplication -AllAssociatedDesktopGroupUUID $_.UUID.guid -filter {Enabled -eq "True"}  
      } |     Select-Object name, UserFilterEnabled, @{l="AssociatedUserNames";e={$_.AssociatedUserNames -join ","}} |export-csv "$env:computername.csv"
 
-
-
 $ComputerName="localhost"
 
 #`r`
@@ -22,9 +20,6 @@ Get-BrokerApplication -AllAssociatedDesktopGroupUUID $_.UUID.guid -filter {Enabl
   }
 }
 Invoke-Command @parameters | Select-Object name, AllAssociatedDesktopGroupUUIDs, UserFilterEnabled, @{l="AssociatedUserNames";e={$_.AssociatedUserNames -join ","}} |export-csv EnabledApplication.csv
-
-
-
 
 ####################################################################
 
