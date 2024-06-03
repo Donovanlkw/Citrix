@@ -1,3 +1,104 @@
+### --- Collect Data --- ###
+$CTXXA=Get-brokermachine -Sessionsupport  MultiSession
+$CTXXD=Get-brokermachine -MaxRecordCount 99999 -Sessionsupport  SingleSession
+$CTXICA=Get-BrokerSession -MaxRecordCount 99999 
+$CTXCC=Get-ConfigEdgeServer 
+$CTXDG=get-brokerdesktopgroup -MaxRecordCount 99999 
+$CTXACL=Get-BrokerAccessPolicyRule -MaxRecordCount 99999 
+$CTXAGOnlyACL = $CTXACL|where {($_.AllowedConnections -eq "NotViaAG") -and ($_.Enabled -like "False") }
+$CTXVDI=$CTXICA |where{ ($_.MachineSummaryState -eq "Inuse") -and ($_.Protocol -eq "HDX") -and ($_.OSType -eq "Windows 10") } 
+### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- 
+
+### --- Export Data --- ###
+$Today=Get-Date -f "yyyyMMdd"
+mkdir $today
+cd $today
+variable CTX* | Foreach-object {
+$name=$_.Name
+$name
+$_.value |out-file $name"_"$today.txt
+}
+
+### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- 
+### --- Analysis Data --- ###
+$CTXXD |where {`
+($_.RegistrationState -eq "Unregistered") -and `
+($_.PowerState -eq "On") -and `
+($_.IsAssigned -eq "True") -and `
+($_.SessionState -notlike "Active") -and `
+($_.Desktopgroupname -notlike "GTS VDI Staging") } `
+|select RegistrationState,  PowerState, DNSname, DesktopGroupName, InMaintenanceMode,IsAssigned, LastDeregistrationReason, LastDeregistrationTime |ft
+
+$CTXXA |select LastDeregistrationReason, LastDeregistrationTime, dnsname, ostype, RegistrationState,DesktopGroupName,LoadIndex |sort LastDeregistrationTime | ft
+$CTXCC |select ZoneName, MachineAddress , DataLastReceivedTime, LastStateChangeTimeInUtc, IsHealthy, SfAdvHealthCheckConfigured | ft
+
+### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- 
+  
+### --- DG Name and number of Data --- ###
+$CTXDG |where {`
+($_.SessionSupport -eq "SingleSession") -and `
+($_.Enabled -eq "True")
+} `
+|select Name,  DesktopsAvailable
+
+### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- 
+### --- Get the full list of VM Per DG --- ###
+
+$DGName=$CTXDG |where {`
+($_.SessionSupport -eq "SingleSession") -and `
+($_.Enabled -eq "True")
+} |select Name
+
+
+$DGName | Foreach-object {
+$currentDG=$_.name
+Write-output $currentDG
+($XD |where {($_.IsAssigned -eq "True") -and ($_.Desktopgroupname -eq $currentDG) }).dnsname |out-file ./$CurrentDG.txt
+}
+
+
+### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- 
+### --- Get the full list of VM Per DG --- ###
+
+
+### --- Analysis Data --- ###
+$ctxXD |where {`
+($_.RegistrationState -eq "registered") -and ($_.Desktopgroupname -like "RA - Singapore") 
+
+} | select dnsname, ControllerDNSName 
+-and `
+($_.IsAssigned -eq "True") -and `
+($_.SessionState -notlike "Active") -and `
+`
+|select RegistrationState,  PowerState, DNSname, DesktopGroupName, InMaintenanceMode,IsAssigned, LastDeregistrationReason, LastDeregistrationTime |ft
+
+
+### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- 
+### --- Export all VDI mapping. 
+  
+$AllMapping=@()
+
+$CTXXD| Foreach-object {
+
+    $computername=$_.DNSName
+    $_.AssociatedUserUPNs | Foreach-object {
+    $mapping = [PsCustomObject]@{
+        Name = $computername
+        UPN = $_
+        }
+    $AllMapping +=$mapping
+    }
+}
+
+$AllMapping |out-file UsermappingAll.txt
+
+
+### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- 
+
+Get-Module Citrix.* -ListAvailable | Select-Object Name -Unique
+Get-Command -Module Citrix.Broker.Commands
+  
+### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### ---   
 Get-BrokerAccessPolicyRule  -MaxRecordCount 100000  |Out-File BrokerAccessPolicyRule.txt
 Get-BrokerAdminFolder  -MaxRecordCount 100000  |Out-File BrokerAdminFolder.txt
 Get-BrokerAppAssignmentPolicyRule  -MaxRecordCount 100000  |Out-File BrokerAppAssignmentPolicyRule.txt
@@ -15,9 +116,6 @@ Get-BrokerController  -MaxRecordCount 100000  |Out-File BrokerController.txt
 Get-BrokerDBConnection   |Out-File BrokerDBConnection.txt
 #Get-BrokerDBSchema    |Out-File BrokerDBSchema.txt
 #Get-BrokerDBVersionChangeScript   |Out-File BrokerDBVersionChangeScript.txt
-
-
-
 
 Get-BrokerDelayedHostingPowerAction  -MaxRecordCount 100000  |Out-File BrokerDelayedHostingPowerAction.txt
 Get-BrokerDesktop  -MaxRecordCount 100000  |Out-File BrokerDesktop.txt
