@@ -1,5 +1,5 @@
 ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- 
-### --- Searching assigned published app--- ### 
+### --- Searching assigned published App  & Shared Desktop (not dedicated)--- ### 
 $PublishApp=$user.memberof|foreach{
 Get-BrokerResource -User $user.SamAccountName -Groups $_}
 $PublishApp | select name -Unique
@@ -7,14 +7,18 @@ $PublishApp | select name -Unique
 
 
 ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- 
-### --- Searching assigned published Desktop--- ### 
-$PublishApp=$user.memberof|foreach{
-Get-BrokerResource -User $user.SamAccountName -Groups $_}
-$PublishApp | select name -Unique
 
+#Get the ACL for Destkop
+Get-BrokerAccessPolicyRule -MaxRecordCount 10000 |select-Object  DesktopGroupName, IncludedUserFilterEnabled  -ExpandProperty IncludedUsers | Format-table DesktopGroupName, IncludedUserFilterEnabled, FullName |out-file DG.csv
 
+#Get the ACL for PusblishDesktop in XenApp
+Get-BrokerEntitlementPolicyRule -MaxRecordCount 10000 |select-Object PublishedName, Enabled -ExpandProperty IncludedUsers | Format-table  PublishedName, Enabled, FullName |out-file Desktop.csv
 
+#Get the ACL for ApplicationGroup access
+Get-BrokerApplicationGroup -MaxRecordCount 10000 | Select-Object name, UserFilterEnabled, @{l="AssociatedUserNames";e={$_.AssociatedUserNames -join ","}}  |export-csv AG.csv
 
+#Get the ACL for Application access
+Get-BrokerApplication -MaxRecordCount 10000 | Select-Object name, UserFilterEnabled, @{l="AssociatedUserNames";e={$_.AssociatedUserNames -join ","}} |export-csv A.csv
 
 
 
