@@ -19,6 +19,10 @@ $name
 $_.value |out-file $name"_"$today.txt
 }
 
+
+
+
+
 ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- 
 ### --- Analysis Data --- ###
 $CTXXD |where {`
@@ -99,7 +103,6 @@ Get-Module Citrix.* -ListAvailable | Select-Object Name -Unique
 Get-Command -Module Citrix.Broker.Commands
   
 ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### ---   
-Get-BrokerAccessPolicyRule  -MaxRecordCount 100000  |Out-File BrokerAccessPolicyRule.txt
 Get-BrokerAdminFolder  -MaxRecordCount 100000  |Out-File BrokerAdminFolder.txt
 Get-BrokerAppAssignmentPolicyRule  -MaxRecordCount 100000  |Out-File BrokerAppAssignmentPolicyRule.txt
 Get-BrokerAppEntitlementPolicyRule  -MaxRecordCount 100000  |Out-File BrokerAppEntitlementPolicyRule.txt
@@ -173,3 +176,17 @@ Get-BrokerUnconfiguredMachine  -MaxRecordCount 100000  |Out-File BrokerUnconfigu
 #Get-BrokerUniversalClaim  -MaxRecordCount 100000  |Out-File BrokerUniversalClaim.txt
 Get-BrokerUser  -MaxRecordCount 100000  |Out-File BrokerUser.txt
 Get-BrokerUserZonePreference  -MaxRecordCount 100000  |Out-File BrokerUserZonePreference.txt
+
+
+
+### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### 
+###--- check the Xenapp status ---###
+
+$parameters = @{
+  ComputerName = Get-Content "VM_DDC_XA.txt"
+  ScriptBlock = {Get-Brokermachine -SessionSupport MultiSession -ProvisioningType MCS}
+}
+
+$result = Invoke-Command @parameters
+$result |select CatalogName, DNSName, ImageOutOfDate, InMaintenanceMode, LoadIndex, SessionCount, RegistrationState |Sort-Object sessionCount, LoadIndex |Format-table -AutoSize 
+
