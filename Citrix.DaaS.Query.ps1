@@ -37,4 +37,43 @@ $computername.dnsname|foreach{
 ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- 
 ### --- CTX seach tags in XA/XD VM--- ###
 $tags="tagsname"
-$XD |select dnsname, desktopgroupname, @{name='tags'; Expression={$_.tags}} |select-string -AllMatches  UK_UDP_Policy
+$XD |select dnsname, desktopgroupname, @{name='tags'; Expression={$_.tags}} |select-string -AllMatches  $tags
+
+
+
+####################################################################
+### Get the enabled application in enabled DG ###
+
+Get-BrokerDesktopGroup -filter {InMaintenanceMode -eq "False"}  | ForEach-Object {
+Get-BrokerApplication -AllAssociatedDesktopGroupUUID $_.UUID.guid -filter {Enabled -eq "True"}  
+     } |     Select-Object name, UserFilterEnabled, @{l="AssociatedUserNames";e={$_.AssociatedUserNames -join ","}} |export-csv "$env:computername.csv"
+
+$ComputerName="localhost"
+
+#`r`
+
+$computerName|out-file "serverlist.txt"
+# -Encoding unicode
+
+$parameters = @{
+  ComputerName = Get-Content "serverlist.txt"
+  ScriptBlock = {Get-BrokerDesktopGroup -filter {Enabled -eq "True"}  | ForEach-Object {
+Get-BrokerApplication -AllAssociatedDesktopGroupUUID $_.UUID.guid -filter {Enabled -eq "True"}  
+     } 
+  }
+}
+Invoke-Command @parameters | Select-Object name, AllAssociatedDesktopGroupUUIDs, UserFilterEnabled, @{l="AssociatedUserNames";e={$_.AssociatedUserNames -join ","}} |export-csv EnabledApplication.csv
+
+
+####################################################################
+
+#Get the VM Inventory from Citrix Studio
+
+$computer = "DDC"
+Invoke-Command -Computer $computer -ScriptBlock {
+	Get-BrokerDesktop   -MaxRecordCount 10000 
+ } |	Select-Object MachineName, @{l="AssociatedUserNames";e={$_.AssociatedUserNames -join ","}} |Export-Csv $computer
+ 
+# Merge all the files
+Get-ChildItem -include azaw* -Recurse |get-content|Out-File StudioInventory -NoClobber
+
