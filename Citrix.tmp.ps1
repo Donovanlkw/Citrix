@@ -1,3 +1,5 @@
+### --- get the reboot from MCS servers --- ### 
+
 $parameters = @{
   ComputerName = Get-Content VM_DDC.txt
   ScriptBlock = {Get-Brokermachine -ProvisioningType MCS}
@@ -14,3 +16,4 @@ Get-CimInstance -ComputerName $ComputerNameMCS.MCSserver -Class win32_operatings
  $x |select LastDeregistrationReason, LastDeregistrationTime, MachineName, ostype
 
 
+### --- get the reboot from MCS servers --- ### 
