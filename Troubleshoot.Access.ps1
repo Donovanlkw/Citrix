@@ -1,3 +1,21 @@
+### --- Sample Host Table --- ### 
+$CTXHOSTEXTOGR=@()
+$FQDN=
+"Citrix.cloud.com",
+"Citrix.cloud.com"
+$IP=
+"40.114.186.222",
+"40.114.186.222"
+
+$CTXHOSTEXTOGR= for($i= 0; $i -lt $FQDN.count; $i++){
+[PSCustomObject]@{
+  FQDN=$FQDN[$i]
+  IP=$IP[$i]
+  }
+}
+
+
+
 variable ctxHostExt* | Foreach-object {
 $name=$_.Name
 $name
@@ -5,6 +23,11 @@ $_.value  |ft
 #|out-file $name"_"$today.txt
 }
 
+### ---  From Performance Endpoint to to Web --- ###
+$performance=$FQDN |ForEach-Object {
+Measure-Command { Test-NetConnection $_ -port 443}
+}
+$Performance. totalseconds 
 
 ### ---  verified if tcp port accessibled form public internet? --- ###
 Variable CTXHostExt* |foreach-object{
