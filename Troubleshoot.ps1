@@ -1,3 +1,124 @@
+$ComputerName =  ""
+
+$AllCR= $ComputerName |ForEach {
+###----- Collect last changed KB/ SW -----# 
+(Get-HotFix -ComputerName  $_ | Sort-Object InstalledOn|select InstalledOn, CSName, HotfixID)[-1] |ft
+
+$SW=Get-CimInstance -ComputerName $_ -Class Win32_Product
+($SW |Sort-Object InstallDate |select InstallDate, Name , Vendor,  Version)[-1] |ft
+
+###----- Collect last reboot time. -----# 
+$SystemInfo =Get-CimInstance  -ComputerName $_ -Class win32_operatingsystem
+$SystemInfo |select lastbootuptime  |ft
+
+
+###--- select all non-started Citrix service --- ###
+
+}
+$AllCR
+
+
+#----- Collect all log from server group in last 1 days-----# 
+$StartTime=(Get-date).AddDays(-1)
+$EndTime= Get-date
+
+$Error=$ComputerName |foreach {
+Get-WinEvent -ComputerName $_ -FilterHashTable @{level=2;LogName="system";StartTime=$StartTime;EndTime=$EndTime}
+Get-WinEvent -ComputerName $_ -FilterHashTable @{level=2;LogName="application";StartTime=$StartTime;EndTime=$EndTime}
+}
+
+$Error |select timecreated, MachineName, Message |sort timecreated
+
+
+
+
+### --- --- ###
+
+
+
+<#
+
+Get-Item C:\ProgramData\CitrixCseCache\*
+Get-Item C:\Windows\System32\GroupPolicy\*
+
+\HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies
+
+(Get-Item C:\Windows\System32\GroupPolicy).LastAccessTime
+
+C:\Windows\System32\GroupPolicy\Machine
+C:\Windows\System32\GroupPolicy\User
+
+###---   https://support.citrix.com/article/CTX134961/citrix-virtual-apps-and-desktops-cvad-policies-are-not-applying-correctly
+
+Get-Item C:\ProgramData\CitrixCseCache\*
+Get-Item \HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies
+
+# basic information verification , Resolve DNS
+
+# basic connectivitity check, test-netconnection.
+# Get the error log. 
+
+
+$cmd=Get-Module Citrix.* -ListAvailable | Select-Object Name -Unique
+Get-Command -module Citrix.Configuration.Commands    
+
+$CtxCC=Get-ConfigEdgeServer 
+$CtxCC |select ZoneName, MachineAddress , LastStateChangeTimeInUtc, IsHealthy
+$CtxCC =(Get-ConfigZone).name
+
+###--- create a server list --- ###
+$CtxXA=Get-brokermachine -Sessionsupport  MultiSession
+$CtxXD=get-brokermachine -MaxRecordCount 99999 -RegistrationState Unregistered -PowerState On |where{{$_.IsAssigned -eq "True"} -and {$_.InMaintenanceMode -eq 'False'}}
+$CtxCC=get-ConfigEdgeServer
+
+
+
+
+### Privilege Account
+### Troubleshooting for Larger scale outage. 
+### test the network connectivity on Netscaler from External / Internal
+
+#Test-FasCertificateSigningRequest — Cmdlet to perform a test certificate signing request (CSR)
+#Test-FasCrypto — Cmdlet to perform a test signature operation by signing a piece of data using a test private key
+#Test-FasKeyPairCreation — Cmdlet to verify if key pair creation is working
+#Test-FasUserCertificateCrypto — Cmdlet to verify whether cryptography is working for a particular user certificate
+
+
+#>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 $connectTestResult = Test-NetConnection -ComputerName globomantics456.file.core.windows.net -Port 445
 if ($connectTestResult.TcpTestSucceeded) {
     # Save the password so the drive will persist on reboot
