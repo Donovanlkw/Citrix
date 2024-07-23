@@ -77,3 +77,25 @@ Invoke-Command -Computer $computer -ScriptBlock {
 # Merge all the files
 Get-ChildItem -include azaw* -Recurse |get-content|Out-File StudioInventory -NoClobber
 
+
+
+### --- get the reboot from MCS servers --- ### 
+
+$parameters = @{
+  ComputerName = Get-Content VM_DDC.txt
+  ScriptBlock = {Get-Brokermachine -ProvisioningType MCS}
+}
+
+Invoke-Command @parameters |select DNSName |export-csv output_VM_MCS.txt
+
+$ComputerNameMCS = Import-csv output_VM_MCS.txt -Header MCSserver
+Get-CimInstance -ComputerName $ComputerNameMCS.MCSserver -Class win32_operatingsystem | select csname, lastbootuptime |Sort-Object lastbootuptime|out-file output_bootuptime.txt
+
+
+### --- last reboot time / Regirstion --- ###
+ $x = get-brokerdesktop -ostype *201*
+ $x |select LastDeregistrationReason, LastDeregistrationTime, MachineName, ostype
+
+
+### --- get the reboot from MCS servers --- ### 
+
