@@ -1,3 +1,50 @@
+### https://developer-docs.citrix.com/en-us/citrix-cloud/citrix-cloud-api-overview/citrix-cloud-api-walkthrough.html
+###--- Citrix DaaS API ---###
+$CLIENT_ID=' '
+$CLIENT_SECRET=' '
+$customerId = ''
+
+$resourceLocUrl = "https://registry.citrixworkspacesapi.net/$customerId/resourcelocations"
+$tokenUrl = 'https://api-us.cloud.com/cctrustoauth2/root/tokens/clients'
+
+### OAuth 2.0 Authentication
+$response = Invoke-WebRequest $tokenUrl -Method POST -Body @{
+  grant_type = "client_credentials"
+  client_id = $CLIENT_ID
+  client_secret = $CLIENT_SECRET
+}
+
+$response
+$token = $response.Content | ConvertFrom-Json
+$token | Format-List
+
+### --- ### --- ### --- ### --- ###
+### Calling Citrix Cloud Services Platform
+### CwsAuth Authentication
+$headers = @{
+  Authorization = "CwsAuth Bearer=$($token.access_token)"
+}
+
+$response = Invoke-WebRequest $resourceLocUrl -Headers $headers
+$response | ConvertFrom-Json | ConvertTo-Json -Depth 10
+
+
+### --- list of services and the customer’s entitlement to use each one.
+$response = Invoke-WebRequest "https://core.citrixworkspacesapi.net/$customerId/serviceStates" -Headers $headers
+$serviceStates = $response | ConvertFrom-Json
+$serviceStates | ConvertTo-Json -Depth 10
+
+ 
+
+
+
+
+
+
+
+
+
+
 ### --- Secure XML Traffic on Cloud Connectors
 # install a Certificaiton in pfx format.
 #get the Thumbprint from SSL Certification.
