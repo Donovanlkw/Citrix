@@ -28,14 +28,13 @@ $name
 $_.value  |ft
     $_.value|foreach-object{
         $Performance=Measure-Command { $result=test-netconnection $_.fqdn -port 443}
-        Write-output $Result| select "TcpTestSucceeded" |fl
-        Write-output $Performance | select "TotalSeconds" |fl
-              
+        $Result, $Performance  |Select TcpTestSucceeded, TotalSeconds |ft
         if ($Result.TcpTestSucceeded -ne "true"){
             write-host $_.fqdn
             if ($result.remoteaddress.IPaddresstostring -ne $_.IP){
                 write-host "resolved Different"
             }
+
         }
     #Perform a web request to get the certificate
     $url = "https://"+$_.fqdn
@@ -44,17 +43,18 @@ $_.value  |ft
     $request = [System.Net.HttpWebRequest]::Create($url)
     $request.AllowAutoRedirect = $false
     $request.Method = "HEAD"
- #   $response = $request.GetResponse()
+    $response = $request.GetResponse()
 
     #Get the SSL certificate
     $cert = $request.ServicePoint.Certificate
     $cert2 = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2 $cert
-    #Write-output  $cert2 |select "NotAfter" |fl
+    Write-output  $cert2 |select "NotAfter" |fl
     $Today=Get-Date
     if ($($cert2.NotAfter) -lt $Today){
          $cert2 |select "NotAfter"
          }
     }
 }
+
 
 ######################################################################
