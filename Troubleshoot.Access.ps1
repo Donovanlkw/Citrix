@@ -14,8 +14,6 @@ $CTXHOSTEXTOGR= for($i= 0; $i -lt $FQDN.count; $i++){
   }
 }
 
-
-
 variable ctxHostExt* | Foreach-object {
 $name=$_.Name
 $name
@@ -23,26 +21,20 @@ $_.value  |ft
 #|out-file $name"_"$today.txt
 }
 
-### ---  From Performance Endpoint to to Web --- ###
-$performance=$FQDN |ForEach-Object {
-Measure-Command { Test-NetConnection $_ -port 443}
-}
-$Performance. totalseconds 
-
 ### ---  verified if tcp port accessibled form public internet? --- ###
-Variable CTXHostExt* |foreach-object{
+$output=Variable CTXHostExtOGR |foreach-object{
 $name=$_.Name
 $name
 $_.value  |ft
     $_.value|foreach-object{
-        $result=test-netconnection $_.fqdn -port 443
-        $Result.TcpTestSucceeded
-        $Result.remote
+        $Performance=Measure-Command { $result=test-netconnection $_.fqdn -port 443}
+        Write-output $Result| select "TcpTestSucceeded" |fl
+        Write-output $Performance | select "TotalSeconds" |fl
+              
         if ($Result.TcpTestSucceeded -ne "true"){
             write-host $_.fqdn
-            write-host "connection Failure"
             if ($result.remoteaddress.IPaddresstostring -ne $_.IP){
-                write-host "resolved False"
+                write-host "resolved Different"
             }
         }
     #Perform a web request to get the certificate
@@ -52,18 +44,17 @@ $_.value  |ft
     $request = [System.Net.HttpWebRequest]::Create($url)
     $request.AllowAutoRedirect = $false
     $request.Method = "HEAD"
-    $response = $request.GetResponse()
+ #   $response = $request.GetResponse()
 
     #Get the SSL certificate
     $cert = $request.ServicePoint.Certificate
     $cert2 = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2 $cert
-
+    #Write-output  $cert2 |select "NotAfter" |fl
     $Today=Get-Date
     if ($($cert2.NotAfter) -lt $Today){
-         write-host $cert2.NotAfter
+         $cert2 |select "NotAfter"
          }
     }
 }
 
 ######################################################################
-
