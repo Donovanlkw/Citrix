@@ -7,11 +7,8 @@
 #}
 
 get-cimclass -Namespace root\Citrix\EUEM
-Get-CimInstance -ComputerName xxxx  -Namespace root\Citrix\EUEM -ClassName Citrix_Euem_RoundTrip  
 
 
-Get-CimInstance -ComputerName xxxx  -Namespace root\Citrix\EUEM -ClassName Citrix_Euem_ClientStartup   
-Get-CimInstance -ComputerName xxxx  -Namespace root\Citrix\EUEM -ClassName Citrix_Euem_Updated
 
 Get-CimInstance -ComputerName xxxx  -Namespace root\Citrix\EUEM -ClassName Citrix_Euem_Updated
 Get-CimInstance -ComputerName xxxx  -Namespace root\Citrix\EUEM -ClassName Citrix_Euem
