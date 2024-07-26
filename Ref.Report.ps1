@@ -34,3 +34,7 @@ $AllResult += $VMInfo
 }
 
 $AllResult|Format-Table -autosize
+
+
+$x|out-string -stream|select-string "file"
+#https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/select-string?view=powershell-7.4
