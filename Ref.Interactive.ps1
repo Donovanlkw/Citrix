@@ -1,10 +1,26 @@
 ################ Input  ################ 
-param ( 
-    [Parameter(Mandatory=$false)] 
-    [String] $vmName = "vwts19bk-easd00", 
-    [Parameter(Mandatory=$false)] 
-    [String] $VMSize = "Standard D2s v2" 
-) 
+function testing{
+    param ( 
+        [String] $vmName = "", 
+        [String] $computerName = "" 
+        #[Parameter(Mandatory=$false)]
+    )
+        
+    Write-host $vmName
+    Write-host $computerName
+     
+}
+
+
+
+
+
+$CtxSFE|Foreach {
+Get-WinEvent -ComputerName $_ -FilterHashTable @{LogName=$LogName;Id=$eventid;ProviderName=$ProviderName;level=$level;StartTime=$StartTime;EndTime=$EndTime}
+}
+
+
+
 
 catch { 
 
