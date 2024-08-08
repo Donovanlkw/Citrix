@@ -8,7 +8,9 @@ $URL = "https://api.github.com/users/donovanlkw"
 
 
 invoke-restmethod -Uri $URL
-invoke-restmethod -Uri $URL -hteaders $authHeader
+
+
+#invoke-restmethod -Uri $URL -hteaders $authHeader
 
 
 https://github.com/microsoft/powershellforgithub.
