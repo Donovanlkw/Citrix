@@ -1,3 +1,11 @@
+$ps1 = "Citrix.DaaS.Query.ps1"
+$URL="https://raw.githubusercontent.com/Donovanlkw/Citrix/main/$ps1"
+$ScriptFromGitHub= invoke-WebREquest -Uri $url
+Invoke-Expression $($ScriptFromGitHub.Content)
+
+
+
+
 
 ### --- Generate API Authentication Token
 https://github.com/settings/tokens/new
