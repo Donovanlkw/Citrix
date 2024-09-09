@@ -1,4 +1,24 @@
+### --- run a quick real-time tcp dump --- ###
+#shell
+#nstcpdump.sh host $ipaddress
+
+### --- exam the log. --- ###
+#shell
+#cd log
+### view a system event , warning and error. --- ### local ns time in GMT. 
+cat ns.log  
+
+
+### --- the log related to client request --- ###
+nslog
+nsconmsg -L newnslog -d event
+nsconmsg -L newnslog -d current
+
+
+
 https://support.citrix.com/article/CTX109262/basic-unix-commands-for-netscaler
+
+
 
 
 AAA Troubleshooing. 
