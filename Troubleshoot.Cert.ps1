@@ -1,11 +1,3 @@
-Get-ConfigEdgeServer |select ZoneName, MachineAddress , DataLastReceivedTime, LastStateChangeTimeInUtc, IsHealthy, SfAdvHealthCheckConfigured | ft
-
-
-Get-Certificate -Template WebServer -DnsName ""
-
--CertStoreLocation Cert:\LocalMachine\My  -SubjectName “webserver1.contoso.com”
-
-
 ### --- check the cerification of URL --- ###
 
 $url = "https://citrix.cloud.com"
@@ -41,3 +33,11 @@ $x=[Net.ServicePointManager]::Securityprotocol
 #[Net.ServicePointManager]::Securityprotocol = [Net.ServicePointManager]::Securityprotocol::Ssl3 -bor  [Net.ServicePointManager]::Securityprotocol::Tls -bor   [Net.ServicePointManager]::Securityprotocol::Tls12 
 
 HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols
+
+
+### --- searching the certification of local store.--- ###
+
+Get-Certificate -Template WebServer -DnsName ""
+
+-CertStoreLocation Cert:\LocalMachine\My  -SubjectName “webserver1.contoso.com”
+
