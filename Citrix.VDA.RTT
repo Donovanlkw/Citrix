@@ -1,3 +1,7 @@
+ctxsession.exe -v 
+ctxsession.exe -d
+netstat -a -p udp
+
 
 #if ($TeamsHDX) {
 #Write-host "$env:computername" + "  HDX-Opt"
