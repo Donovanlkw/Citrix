@@ -2,3 +2,23 @@ cat ~/.ICAClient/WFClient.ini
 cat ~/.ICAClient/All_Regions.ini
 cat /opt/citrix/ICAClient/config/All_Regions.ini
 
+
+### --- Capture log ###
+
+
+sudo /opt/Citrix/ICAClient/util/hdxcheck.sh.
+sudo tar -czvf $HOSTNAME-CWAL.tar.gz /var/log /tmp/logfile.txt /tmp/Citrx_* /optCitrix/ICAClient/ $HOME/.ICAClient/Logs
+
+
+### --- check ICA version 
+dpkg --list | grep -i icaclient
+
+### --- uninstall 
+sudo apt remove icaclient -y
+
+### --- completely uninstall 
+sudo apt remove icaclient -y
+sudo apt autoremove -y
+rm -r ~/.ICAClient/
+
+###--- ~/.ICAClient/ will be created after you "Agreed T& C""
