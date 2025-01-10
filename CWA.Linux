@@ -1,0 +1,4 @@
+cat ~/.ICAClient/WFClient.ini
+cat ~/.ICAClient/All_Regions.ini
+cat /opt/citrix/ICAClient/config/All_Regions.ini
+
