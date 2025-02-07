@@ -1,6 +1,16 @@
 ##### Definition #####
-$SF = Get-RDServer -Role "RDS-CONNECTION-BROKER"
+Invoke-WebRequest -Uri "https://go.microsoft.com/fwlink/?linkid=2088631" -OutFile "C:\dotnet48.exe"
 
+Install-WindowsFeature -name  web-server
+Invoke-WebRequest -Uri "https://go.microsoft.com/fwlink/?linkid=2088631" -OutFile "C:\dotnet48.exe"
+
+Start-Process -FilePath "C:\dotnet48.exe" -ArgumentList "/quiet /norestart" -Wait
+
+
+Start-Process -FilePath "C:\dotnet48.exe" -ArgumentList "/quiet /norestart" -Wait
+
+Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full" -Name Release
+Restart-Computer -Force
 
 
 
