@@ -6,6 +6,7 @@ Start-Process -FilePath "C:\dotnet48.exe" -ArgumentList "/quiet /norestart" -Wai
 Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full" -Name Release
 Restart-Computer -Force
 
+.\CitrixStoreFront-x64.exe -silent
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 
 ### Configure site ###
