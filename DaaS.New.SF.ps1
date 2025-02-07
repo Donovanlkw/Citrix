@@ -1,3 +1,9 @@
+##### Definition #####
+$SF = Get-RDServer -Role "RDS-CONNECTION-BROKER"
+
+
+
+
 https://support.citrix.com/article/CTX206009
 
 https://developer-docs.citrix.com/projects/storefront-powershell-sdk/en/latest/Get-STFStoreService/
