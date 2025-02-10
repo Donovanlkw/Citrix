@@ -1,10 +1,51 @@
-### Definition ###
-Install-WindowsFeature -name  web-server
+### Run SF requriement 
+$computername|Foreach-object {
+    Invoke-Command -Computer $_ -ScriptBlock {
+        Install-WindowsFeature -name  web-server
+        
+        #Get-ChildItem 'HKLM:\SOFTWARE\Microsoft\NET Framework Setup\NDP' -recurse |Get-ItemProperty -name Version,Release -EA 0 | Where { $_.PSChildName -match '^(?!S)\p{L}'} | Select PSChildName, Version, Release
+        $release = Get-ItemPropertyValue -LiteralPath 'HKLM:SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full' -Name Release
+        switch ($release) {
+        { $_ -ge 533320 } { $version = '4.8.1 or later'; break }
+        { $_ -ge 528040 } { $version = '4.8'; break }
+        { $_ -ge 461808 } { $version = '4.7.2'; break }
+        { $_ -ge 461308 } { $version = '4.7.1'; break }
+        { $_ -ge 460798 } { $version = '4.7'; break }
+        { $_ -ge 394802 } { $version = '4.6.2'; break }
+        { $_ -ge 394254 } { $version = '4.6.1'; break }
+        { $_ -ge 393295 } { $version = '4.6'; break }
+        { $_ -ge 379893 } { $version = '4.5.2'; break }
+        { $_ -ge 378675 } { $version = '4.5.1'; break }
+        { $_ -ge 378389 } { $version = '4.5'; break }
+        default { $version = $null; break }
+        }
 
-Invoke-WebRequest -Uri "https://go.microsoft.com/fwlink/?linkid=2088631" -OutFile "C:\dotnet48.exe"
-Start-Process -FilePath "C:\dotnet48.exe" -ArgumentList "/quiet /norestart" -Wait
-Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full" -Name Release
-Restart-Computer -Force
+        if ($version) {
+        Write-Host -Object ".NET Framework Version: $version"
+        } else {
+        Write-Host -Object '.NET Framework Version 4.5 or later is not detected.'
+        Invoke-WebRequest -Uri "https://go.microsoft.com/fwlink/?linkid=2088631" -OutFile "$env:TMP\dotnet48.exe"
+        Start-Process -FilePath "$env:TMP\dotnet48.exe" -ArgumentList "/quiet /norestart" -Wait
+        #Restart-Computer -Force
+
+        $path="\\metaframe\Citrix Virtual Apps and Desktops LTSR 2203 CU1"
+        copy  $path\*.* $env:tmp\
+        start "$env:TMP\CitrixStoreFront-x64.exe -silent"
+     
+        
+        }     
+        #some technical issue of second Hop in poWershell REmoting.
+        #https://learn.microsoft.com/en-us/powershell/scripting/security/remoting/ps-remoting-second-hop?view=powershell-5.1
+
+        $path="\\tc4202\metaframe\Citrix Virtual Apps and Desktops LTSR 2203 CU1"
+        copy  $path\*.* $env:TMP\
+        Start-Process "$env:TMP\CitrixStoreFront-x64.exe" "-silent"
+    }
+}
+
+
+
+
 
 .\CitrixStoreFront-x64.exe -silent
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
