@@ -43,19 +43,47 @@ $computername|Foreach-object {
     }
 }
 
+### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- 
+### --- collect existing SF information. and Export configuration
+$STFDeployment=Get-STFDeployment
+$STFDomainService=Get-STFDomainService
+$STFFeatureState=Get-STFFeatureState
+$STFFeatureStateNames=Get-STFFeatureStateNames
+$STFHmacKey=Get-STFHmacKey
+$STFInstalledFeatures=Get-STFInstalledFeatures
+$STFPackage=Get-STFPackage
+$STFPeerResolutionService=Get-STFPeerResolutionService
+$STFServerGroup=Get-STFServerGroup
+$STFServerGroupConfiguration=Get-STFServerGroupConfiguration
+$STFServerGroupJoinState=Get-STFServerGroupJoinState
+$STFServiceMonitor=Get-STFServiceMonitor
+$STFVersion=Get-STFVersion
+
+
+### --- Create a new site
+Add-STFDeployment -SiteID 1 -HostBaseURL "https://apps.example.com"
+Add-STFAuthenticationService
+
+Enable-STFAuthenticationServiceProtocol -Name (Get-STFAuthenticationProtocolsAvailable) -AuthenticationService (Get-STFAuthenticationService)
+ 
+
+### --- Create a new site
 
 
 
 
-.\CitrixStoreFront-x64.exe -silent
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+
 
 ### Configure site ###
 Import-Module Citrix.StoreFront
 Import-Module Citrix.StoreFront.Stores
 Import-Module Citrix.StoreFront.Authentication
 Import-Module Citrix.StoreFront.WebReceiver
-  
+
+
+
+
+
 $HostbaseUrl=""
 $SiteId = 1,
 $Farmtype = "XenDesktop",
