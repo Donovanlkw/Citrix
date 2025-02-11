@@ -1,4 +1,26 @@
-### Run SF requriement 
+### --- verify the DDC/FAS connections 
+$CTXHostCCC
+$CTXHostFAS
+
+### --- Define CTXHostCCC, CTXHostFAS  
+Variable CTXHost* |foreach-object{
+#$name=$_.Name
+#$name
+$_.value  |ft
+    $_.value|foreach-object{
+        $result=test-netconnection $_.fqdn -port 80
+        $Result.TcpTestSucceeded 
+        if ($Result.TcpTestSucceeded -ne "true"){
+            write-host $_.fqdn
+            write-host "connection Failure"
+         if ($Result.remote -ne $_.IP){
+             write-host "resolved False"
+         }
+        }
+    }
+}
+
+### --- Run SF requriement 
 $computername|Foreach-object {
     Invoke-Command -Computer $_ -ScriptBlock {
         Install-WindowsFeature -name  web-server
@@ -26,22 +48,17 @@ $computername|Foreach-object {
         Write-Host -Object '.NET Framework Version 4.5 or later is not detected.'
         Invoke-WebRequest -Uri "https://go.microsoft.com/fwlink/?linkid=2088631" -OutFile "$env:TMP\dotnet48.exe"
         Start-Process -FilePath "$env:TMP\dotnet48.exe" -ArgumentList "/quiet /norestart" -Wait
-        #Restart-Computer -Force
-
-        $path="\\metaframe\Citrix Virtual Apps and Desktops LTSR 2203 CU1"
-        copy  $path\*.* $env:tmp\
-        start "$env:TMP\CitrixStoreFront-x64.exe -silent"
-     
-        
+        #Restart-Computer -Force              
         }     
-        #some technical issue of second Hop in poWershell REmoting.
-        #https://learn.microsoft.com/en-us/powershell/scripting/security/remoting/ps-remoting-second-hop?view=powershell-5.1
+        # some technical issue of second Hop in poWershell REmoting.
+        # https://learn.microsoft.com/en-us/powershell/scripting/security/remoting/ps-remoting-second-hop?view=powershell-5.1
 
         $path="\\tc4202\metaframe\Citrix Virtual Apps and Desktops LTSR 2203 CU1"
         copy  $path\*.* $env:TMP\
         Start-Process "$env:TMP\CitrixStoreFront-x64.exe" "-silent"
     }
 }
+
 
 ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- 
 ### --- collect existing SF information. and Export configuration
