@@ -90,32 +90,11 @@ Enable-STFAuthenticationServiceProtocol -Name (Get-STFAuthenticationProtocolsAva
 
 
 
-
-### Configure site ###
-Import-Module Citrix.StoreFront
-Import-Module Citrix.StoreFront.Stores
-Import-Module Citrix.StoreFront.Authentication
-Import-Module Citrix.StoreFront.WebReceiver
+### --- Create a new site
+Add-STFDeployment -SiteID 1 -HostBaseURL "https://apps.example.com"
 
 
-
-
-
-$HostbaseUrl=""
-$SiteId = 1,
-$Farmtype = "XenDesktop",
-#[ValidateSet("XenDesktop","XenApp","AppController","VDIinaBox")]
-$FarmServers = 
-$StoreVirtualPath = "/Citrix/Store",
-$LoadbalanceServers = $false,
-$Port = 80,
-$SSLRelayPort = 443,
-     #[ValidateSet("HTTP","HTTPS","SSL")]
-$TransportType = "HTTP"
-
-
-
-<#Param(
+Param(
      [Parameter(Mandatory=$true)]
      [Uri]$HostbaseUrl,
      [long]$SiteId = 1,
@@ -129,9 +108,14 @@ $TransportType = "HTTP"
      [int]$SSLRelayPort = 443,
      [ValidateSet("HTTP","HTTPS","SSL")]
      [string]$TransportType = "HTTP"
-)
-#>
+     )
+     \# Import StoreFront modules. Required for versions of PowerShell earlier than 3.0 that do not support autoloading
+     Import-Module Citrix.StoreFront
+     Import-Module Citrix.StoreFront.Stores
+     Import-Module Citrix.StoreFront.Authentication
+     Import-Module Citrix.StoreFront.WebReceiver
 
+$StoreIISpath=$StoreVirtualPath
 
 # Determine the Authentication and Receiver virtual path to use based of the Store
 $authenticationVirtualPath = "$($StoreIISPath.TrimEnd('/'))Auth"
@@ -172,8 +156,7 @@ else{
  if(-not $store)
  {
  \# Add a Store that uses the new Authentication service configured to publish resources from the supplied servers
- $store = Add-STFStoreService -VirtualPath $StoreVirtualPath -AuthenticationService $authentication -FarmName $Farmtype -FarmType $Farmtype -Servers $FarmServers -LoadBalance $LoadbalanceServers \`
-         -Port $Port -SSLRelayPort $SSLRelayPort -TransportType $TransportType
+ $store = Add-STFStoreService -VirtualPath $StoreVirtualPath -AuthenticationService $authentication -FarmName $Farmtype -FarmType $Farmtype -Servers $FarmServers -LoadBalance $LoadbalanceServers -Port $Port -SSLRelayPort $SSLRelayPort -TransportType $TransportType
  }
  else
  {
@@ -181,8 +164,7 @@ else{
      \# Get the number of farms configured in the store
      $farmCount = (Get-STFStoreFarmConfiguration $store).Farms.Count
      \# Append the farm to the store with a unique name
-     Add-STFStoreFarm -StoreService $store -FarmName "Controller$($farmCount + 1)" -FarmType $Farmtype -Servers $FarmServers -LoadBalance $LoadbalanceServers -Port $Port \`
-         -SSLRelayPort $SSLRelayPort -TransportType $TransportType
+     Add-STFStoreFarm -StoreService $store -FarmName "Controller$($farmCount + 1)" -FarmType $Farmtype -Servers $FarmServers -LoadBalance $LoadbalanceServers -Port $Port -SSLRelayPort $SSLRelayPort -TransportType $TransportType
  }
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
@@ -210,7 +192,12 @@ else{
  }
   
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+### --- https://docs.citrix.com/en-us/storefront/2203-ltsr/sdk-overview.html
 
+
+
+Import-STFConfiguration -ConfigurationZip $env:tmp\bac.zip
+#Clear-STFDeployment -Confirm $False
 
 
 
