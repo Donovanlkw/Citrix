@@ -77,18 +77,6 @@ $STFServiceMonitor=Get-STFServiceMonitor
 $STFVersion=Get-STFVersion
 
 
-### --- Create a new site
-Add-STFDeployment -SiteID 1 -HostBaseURL "https://apps.example.com"
-Add-STFAuthenticationService
-
-Enable-STFAuthenticationServiceProtocol -Name (Get-STFAuthenticationProtocolsAvailable) -AuthenticationService (Get-STFAuthenticationService)
- 
-
-### --- Create a new site
-
-
-
-
 
 ### --- Create a new site
 Add-STFDeployment -SiteID 1 -HostBaseURL "https://apps.example.com"
@@ -195,9 +183,9 @@ else{
 ### --- https://docs.citrix.com/en-us/storefront/2203-ltsr/sdk-overview.html
 
 
-Clear-STFDeployment -Confirm $False
-Add-STFDeployment -siteID 1 -
-Import-STFConfiguration -ConfigurationZip $env:tmp\bac.zip
+#Clear-STFDeployment -Confirm $False
+Add-STFDeployment -siteID 1 
+Import-STFConfiguration -ConfigurationZip "$env:tmp\bac.zip"
 
 
 
