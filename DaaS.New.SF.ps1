@@ -52,11 +52,11 @@ $computername|Foreach-object {
         }     
         # some technical issue of second Hop in poWershell REmoting.
         # https://learn.microsoft.com/en-us/powershell/scripting/security/remoting/ps-remoting-second-hop?view=powershell-5.1
-
-        $path="\\tc4202\metaframe\Citrix Virtual Apps and Desktops LTSR 2203 CU1"
+    }
+        $path="\\metaframe\Citrix Virtual Apps and Desktops LTSR 2203 CU1"
         copy  $path\*.* $env:TMP\
         Start-Process "$env:TMP\CitrixStoreFront-x64.exe" "-silent"
-    }
+
 }
 
 
@@ -184,8 +184,32 @@ else{
 
 
 #Clear-STFDeployment -Confirm $False
+
+### --- Import a configuration. 
+#Clear-STFDeployment -Confirm $False
 Add-STFDeployment -siteID 1 
 Import-STFConfiguration -ConfigurationZip "$env:tmp\bac.zip"
+
+# # # # # # # # # # # 
+### --- Create a server Group
+### at Primary server 
+Start-STFServerGroupJoin -IsAuthorizingServer -Confirm:$false
+Write-Host 'Use the Passcode to join to this server'
+$Passcode = (Start-STFServerGroupJoin -IsAuthorizingServer -Confirm:$false).Passcode
+
+
+
+### at secondary servers
+#Clear-STFDeployment -Confirm $False
+Start-STFServerGroupJoin -AuthorizerHostName serverA -Passcode $Passcode -Confirm:$false
+
+get-stfservergroupjoinstate
+
+
+### operation.
+get-stfservergroupjoinstate
+
+Publish-STFServerGroupConfiguration
 
 
 
