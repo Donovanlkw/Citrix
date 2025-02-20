@@ -59,28 +59,8 @@ $computername|Foreach-object {
 
 }
 
-
-### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- 
-### --- collect existing SF information. and Export configuration
-$STFDeployment=Get-STFDeployment
-$STFDomainService=Get-STFDomainService
-$STFFeatureState=Get-STFFeatureState
-$STFFeatureStateNames=Get-STFFeatureStateNames
-$STFHmacKey=Get-STFHmacKey
-$STFInstalledFeatures=Get-STFInstalledFeatures
-$STFPackage=Get-STFPackage
-$STFPeerResolutionService=Get-STFPeerResolutionService
-$STFServerGroup=Get-STFServerGroup
-$STFServerGroupConfiguration=Get-STFServerGroupConfiguration
-$STFServerGroupJoinState=Get-STFServerGroupJoinState
-$STFServiceMonitor=Get-STFServiceMonitor
-$STFVersion=Get-STFVersion
-
-
-
-### --- Create a new site
-Add-STFDeployment -SiteID 1 -HostBaseURL "https://apps.example.com"
-
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+### --- Create a New Site --- ###
 
 Param(
      [Parameter(Mandatory=$true)]
@@ -110,7 +90,6 @@ $authenticationVirtualPath = "$($StoreIISPath.TrimEnd('/'))Auth"
 $receiverVirtualPath = "$($StoreVirtualPath.TrimEnd('/'))Web"
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
-
 # Determine if the deployment already exists
 $existingDeployment = Get-STFDeployment
 if(-not $existingDeployment){
@@ -138,7 +117,6 @@ else{
   
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
-
 # Determine if the store service at the specified virtual path exists
  $store = Get-STFStoreService -VirtualPath $StoreVirtualPath
  if(-not $store)
@@ -182,9 +160,6 @@ else{
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 ### --- https://docs.citrix.com/en-us/storefront/2203-ltsr/sdk-overview.html
 
-
-#Clear-STFDeployment -Confirm $False
-
 ### --- Import a configuration. 
 #Clear-STFDeployment -Confirm $False
 Add-STFDeployment -siteID 1 
@@ -210,6 +185,29 @@ get-stfservergroupjoinstate
 get-stfservergroupjoinstate
 
 Publish-STFServerGroupConfiguration
+
+#Clear-STFDeployment -Confirm $False
+
+
+
+### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- 
+### --- collect existing SF information. and Export configuration
+$STFDeployment=Get-STFDeployment
+$STFDomainService=Get-STFDomainService
+$STFFeatureState=Get-STFFeatureState
+$STFFeatureStateNames=Get-STFFeatureStateNames
+$STFHmacKey=Get-STFHmacKey
+$STFInstalledFeatures=Get-STFInstalledFeatures
+$STFPackage=Get-STFPackage
+$STFPeerResolutionService=Get-STFPeerResolutionService
+$STFServerGroup=Get-STFServerGroup
+$STFServerGroupConfiguration=Get-STFServerGroupConfiguration
+$STFServerGroupJoinState=Get-STFServerGroupJoinState
+$STFServiceMonitor=Get-STFServiceMonitor
+$STFVersion=Get-STFVersion
+
+
+
 
 
 
