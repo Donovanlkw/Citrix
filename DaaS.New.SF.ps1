@@ -156,6 +156,10 @@ else{
  # Enable XenApp services on the store and make it the default for this server
  Enable-STFStorePna -StoreService $store -AllowUserPasswordChange -DefaultPnaService
  }
+$OrigionalSF|Foreach-object {
+    Invoke-Command -Computer $_ -ScriptBlock {
+Export-STFConfiguration -ZipFileName STFconfiguration.zip -targetfolder $env:tmp -NoEncryption
+}
   
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 ### --- https://docs.citrix.com/en-us/storefront/2203-ltsr/sdk-overview.html
