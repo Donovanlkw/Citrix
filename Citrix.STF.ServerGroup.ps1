@@ -1,11 +1,6 @@
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 ### --- https://docs.citrix.com/en-us/storefront/2203-ltsr/sdk-overview.html
 
-### --- Import a configuration. 
-#Clear-STFDeployment -Confirm $False
-Add-STFDeployment -siteID 1 
-Import-STFConfiguration -ConfigurationZip "$env:tmp\bac.zip"
-
 # # # # # # # # # # # 
 ### --- Create a server Group
 ### at Primary server 
