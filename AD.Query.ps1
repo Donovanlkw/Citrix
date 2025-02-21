@@ -30,3 +30,15 @@ $ADhost=$dnshostname |foreach-object {Get-ADComputer -Properties * -filter 'dnsh
 $ADhost |select dnshostname, description
 
 ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### 
+### --- update the new server OU and Description as the old one. 
+$oriVM = "oldVM"
+$computername= "newVM"
+$Description = (Get-ADComputer -Identity $oriVM -Properties *).Description
+$oriOU = (Get-ADComputer -Identity $oriVM -Properties *).DistinguishedName
+$TargetOU = $oriOU.Substring($oriOU.indexof(",")+1)
+
+$computername |Foreach-object {
+get-adcomputer $computername|  Move-ADObject -TargetPath $TargetOU 
+Set-ADComputer -Identity $_ -Description $Description
+}
+
