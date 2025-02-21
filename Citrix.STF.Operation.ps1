@@ -1,31 +1,5 @@
 ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- 
 ### --- collect existing SF information. and Export configuration
-$STFDeployment=Get-STFDeployment
-$STFDomainService=Get-STFDomainService
-$STFFeatureState=Get-STFFeatureState
-$STFFeatureStateNames=Get-STFFeatureStateNames
-$STFHmacKey=Get-STFHmacKey
-$STFInstalledFeatures=Get-STFInstalledFeatures
-$STFPackage=Get-STFPackage
-$STFPeerResolutionService=Get-STFPeerResolutionService
-$STFServerGroup=Get-STFServerGroup
-$STFServerGroupConfiguration=Get-STFServerGroupConfiguration
-$STFServerGroupJoinState=Get-STFServerGroupJoinState
-$STFServiceMonitor=Get-STFServiceMonitor
-$STFVersion=Get-STFVersion
-
-Get-STFDeployment 
-Get-STFDomainService
-Get-STFFeatureState
-Get-STFFeatureStateNames
-Get-STFHmacKey
-Get-STFInstalledFeatures
-Get-STFPackage
-Get-STFPeerResolutionService
-Get-STFServerGroup
-Get-STFServerGroupJoinState
-Get-STFServiceMonitor
-Get-STFVersion
 
 
 $storeservice = Get-STFStoreService
@@ -41,6 +15,40 @@ Get-STFStoreRegisteredGateway -StoreService $storeservice
 Get-STFStoreRegisteredOptimalLaunchGateway -StoreService $storeservice
 Get-STFStoreService -StoreService $storeservice
 Get-STFStoreSubscriptionsDatabase -StoreService $storeservice
+
+Get-STFStoreGatewayService -StoreService $storeservice
+
+Get-STFStoreLaunchOptions -StoreService $storeservice
+
+    Unregister-STFStoreGateway
+    Register-STFStoreGateway
+    Set-STFStoreGatewayService
+    Get-STFStoreGatewayService
+    Set-STFStoreLaunchOptions
+    Get-STFStoreLaunchOptions
+    Register-STFStoreOptimalLaunchGateway
+    Unregister-STFStoreOptimalLaunchGateway
+    Get-STFStorePna
+    Disable-STFStorePna
+    Enable-STFStorePna
+    Revoke-STFStorePnaSmartAccess
+    Get-STFStorePnaSmartAccess
+    Set-STFStorePnaSmartAccess
+    Grant-STFStorePnaSmartAccess
+    Get-STFStoreRegisteredGateway
+    Get-STFStoreRegisteredOptimalLaunchGateway
+    Add-STFStoreService
+    Set-STFStoreService
+    Remove-STFStoreService
+    Get-STFStoreService
+    Set-STFStoreServiceExternalEndpoint
+    Remove-STFStoreServiceExternalEndpoint
+    Get-STFStoreServiceExternalEndpoint
+    Add-STFStoreServiceExternalEndpoint
+    Get-STFStoreSubscriptionsDatabase
+    Set-STFStoreSubscriptionsDatabase
+
+
 
 
 ### --- verify the DDC/FAS connections 
@@ -70,6 +78,13 @@ $_.value  |ft
 get-stfservergroupjoinstate
 Publish-STFServerGroupConfiguration
 #Clear-STFDeployment -Confirm $False
+
+
+Get-STFDeployment
+Clear-STFDeployment
+
+
+    
 
 
 #https://docs.citrix.com/en-us/storefront/2203-ltsr/sdk-overview.html
