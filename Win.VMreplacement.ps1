@@ -46,4 +46,4 @@ $oricert=Invoke-Command -Computer $oriVM @invokeCommand
 $newcert=Invoke-Command -Computer $newVM @invokeCommand
 
 ### ---  compare the cert. find some cert are missing in new server, but excluded the host based cert. 
-compare $oricert  -ReferenceObject $newcert  -Property Subject |sort |where-object {($_.SideIndicator -eq '=>') -AND ($_.Subject -NotMatch "$oriVM")} 
+Compare $oricert  -ReferenceObject $newcert  -Property Subject, PSParentPath |sort |where-object {($_.SideIndicator -eq '=>') -AND ($_.Subject -NotMatch "$oriVM")}  |select PSParentPath, Subject
