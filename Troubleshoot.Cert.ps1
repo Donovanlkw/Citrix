@@ -36,8 +36,9 @@ HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\P
 
 
 ### --- searching the certification of local store.--- ###
+Get-childitem -path cert:\localmachine\My
+Get-childitem -path cert:\localmachine\Root
+Get-childitem -path cert:\CurrentUser\My
 
-Get-Certificate -Template WebServer -DnsName ""
-
--CertStoreLocation Cert:\LocalMachine\My  -SubjectName “webserver1.contoso.com”
-
+### --- searching the certification of local store.--- ###
+Get-childitem -path cert:\localmachine\My |where{$_.subject -like "*keyword*"}
