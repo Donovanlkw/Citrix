@@ -1,7 +1,7 @@
 ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### 
 ### --- update the new server OU and Description as the old one. 
 $oriVM = "oldVM"
-$computername= "newVM"
+$newVM= "newVM"
 
 ### --- get the AD information
 $oriDescription = (Get-ADComputer -Identity $oriVM -Properties *).Description
@@ -24,22 +24,6 @@ Add-Content \\$_\c$\Windows\system32\drivers\etc\hosts  $oriHost
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ### --- localsec, localgpo
 $oriSecpol=secedit /export /cfg $env:tmp\orisecpol.inf
 $targetcpol=get-content (secedit /export /cfg $env:tmp\orisecpol.inf)
@@ -49,3 +33,17 @@ $targetcpol=get-content (secedit /export /cfg $env:tmp\orisecpol.inf)
 Get-childitem -path cert:\localmachine\Root  |sort NotBefore 
 Get-childitem -path cert:\localmachine\CA |sort NotBefore
 
+$invokeCommand = @{
+    ScriptBlock = {
+        ### ---  get all the certification , excluded exiry cert.
+        $today=Get-date
+        Get-ChildItem -Path cert:\localmachine  -Recurse |select * | where-object {$_.NotAfter -gt $today}
+    }
+}
+
+
+$oricert=Invoke-Command -Computer $oriVM @invokeCommand
+$newcert=Invoke-Command -Computer $newVM @invokeCommand
+
+### ---  compare the cert. find some cert are missing in new server, but excluded the host based cert. 
+compare $oricert  -ReferenceObject $newcert  -Property Subject |sort |where-object {($_.SideIndicator -eq '=>') -AND ($_.Subject -NotMatch "$oriVM")} 
