@@ -29,10 +29,15 @@ $dnshostname=($ip | Resolve-DnsName).namehost
 $ADhost=$dnshostname |foreach-object {Get-ADComputer -Properties * -filter 'dnshostname -like $_' }
 $ADhost |select dnshostname, description
 
+
+
+
 ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### 
 ### --- update the new server OU and Description as the old one. 
 $oriVM = "oldVM"
 $computername= "newVM"
+Get-content C:\windows\System32\drivers\etc\hosts
+
 $Description = (Get-ADComputer -Identity $oriVM -Properties *).Description
 $oriOU = (Get-ADComputer -Identity $oriVM -Properties *).DistinguishedName
 $TargetOU = $oriOU.Substring($oriOU.indexof(",")+1)
