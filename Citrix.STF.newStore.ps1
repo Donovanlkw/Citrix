@@ -134,3 +134,12 @@ else{
  # Enable XenApp services on the store and make it the default for this server
  Enable-STFStorePna -StoreService $store -AllowUserPasswordChange -DefaultPnaService
  }
+
+
+### --- Setup FAS for STF
+FAS configuration in STF
+1. Compare the GPO applied in old and new server. 
+Get-childitem "registry::HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Citrix\Authentication\UserCredentialService\"
+
+2. reconfigure the FAS server to allow the new STF communication. 
+- Edit Default Rules, and add thew new STF servers 
