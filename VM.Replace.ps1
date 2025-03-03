@@ -4,31 +4,16 @@ $oriVM = "oldVM"
 $newVM= "newVM"
 
 ### --- get the AD information
-$oriDescription = (Get-ADComputer -Identity $oriVM -Properties *).Description
+$newDescription = (Get-ADComputer -Identity $oriVM -Properties *).Description
 $oriOU = (Get-ADComputer -Identity $oriVM -Properties *).DistinguishedName
-### --- host table
-$oriHost = get-content \\$oriVM\c$\Windows\system32\drivers\etc\hosts | Select-String -NotMatch "^#|^$"
+$newOU = $oriOU.Substring($oriOU.indexof(",")+1)
+$newHost = get-content \\$oriVM\c$\Windows\system32\drivers\etc\hosts | Select-String -NotMatch "^#|^$"
 
-
-### --- applied to new VM
-$computername |Foreach-object {
-get-adcomputer $computername|  Move-ADObject -TargetPath $TargetOU 
-Set-ADComputer -Identity $_ -Description $Description
-Add-Content \\$_\c$\Windows\system32\drivers\etc\hosts  $oriHost
+$newVM |Foreach-object {
+get-adcomputer $_|  Move-ADObject  -TargetPath $newOU 
+Set-ADComputer -Identity $_ -Description $newDescription
+Add-Content \\$_\c$\Windows\system32\drivers\etc\hosts  $newHost
 }
-
-
-
-
-
-
-
-
-### --- localsec, localgpo
-$oriSecpol=secedit /export /cfg $env:tmp\orisecpol.inf
-$targetcpol=get-content (secedit /export /cfg $env:tmp\orisecpol.inf)
-
-
 
 ### --- the certification
 (Get-childitem -path cert:\localmachine\My |sort NotBefore |select Subject )[-1]
@@ -43,10 +28,16 @@ $invokeCommand = @{
     }
 }
 
-
 $oricert=Invoke-Command -Computer $oriVM @invokeCommand
 $newcert=Invoke-Command -Computer $newVM @invokeCommand
 
 ### ---  compare the cert. find some cert are missing in new server, but excluded the host based cert. 
 compare $oricert  -ReferenceObject $newcert  -Property Subject, PSParentPath, Thumbprint |sort |where-object {($_.SideIndicator -eq '=>') -AND ($_.Subject -NotMatch "$oriVM")}  |select PSParentPath, Thumbprint, subject
+
+
+### --- Not completed.
+### --- localsec, localgpo
+$oriSecpol=secedit /export /cfg $env:tmp\orisecpol.inf
+$tnewSecpol=get-content (secedit /export /cfg $env:tmp\orisecpol.inf)
+
 
