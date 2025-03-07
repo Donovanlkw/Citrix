@@ -76,5 +76,32 @@ if ($FASlog.Message.count -gt 0){
     }
 }
 
+
+
+
+
 Write-host "total error in SF" $STFlog.Message.count
 Write-host "total error in FAS" $FASlog.Message.count
+
+
+
+
+
+
+
+
+
+
+
+
+
+### --- this is how the FAS involed. 
+1. user sign-in the STF, FAS get the certification. 
+
+2. 
+
+
+
+
+
+
