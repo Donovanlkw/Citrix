@@ -42,3 +42,18 @@ Get-childitem -path cert:\CurrentUser\My
 
 ### --- searching the certification of local store.--- ###
 Get-childitem -path cert:\localmachine\My |where{$_.subject -like "*keyword*"}
+
+
+
+
+
+
+### --- https://stealthpuppy.com/resolving-issues-starting-ca-offline-crl/
+certutil
+certutil -url  "revoke url"
+
+
+
+
+
+
