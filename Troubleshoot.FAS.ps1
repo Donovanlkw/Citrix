@@ -98,10 +98,18 @@ Write-host "total error in FAS" $FASlog.Message.count
 ### --- this is how the FAS involed. 
 1. user sign-in the STF, FAS get the certification. 
 
-2. 
+Add-PSSnapin Citrix.Authentication.FederatedAuthenticationService.V1
+
+$userid=""
+$user=Get-aduser -Identity $userid
+$userupn=$user.UserPrincipalName
+$CitrixFasAddress = (Get-FasServerForUser -UserPrincipalNames $userupn).Server
+Get-FasUserCertificate -UserPrincipalName  $userupn
 
 
-
-
-
-
+$FASserver=Get-FasServer|select @{name='name'; expression={$_.Address}} 
+$FASserver.name|Foreach-object {
+$CitrixFasAddress= "$_"
+$fasusercert=get-fasusercertificate -MaximumRecordCount 9999
+$fasusercert|select UserPrincipalName, ExpiryDate, @{name='FASServer'; expression={$CitrixFasAddress}} |export-csv "fasUserCert.csv" -append 
+}
