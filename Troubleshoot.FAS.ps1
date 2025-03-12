@@ -117,6 +117,8 @@ $eventtime=(Get-WinEvent -computername $ComputerName -FilterHashtable @{LogName=
 $userid=""
 $user=Get-aduser -Identity $userid
 $userupn=$user.UserPrincipalName
+
+
 $CitrixFasAddress = (Get-FasServerForUser -UserPrincipalNames $userupn).Server
 Get-FasUserCertificate -UserPrincipalName  $userupn
 
@@ -124,8 +126,7 @@ $usercert=Get-FasUserCertificate -UserPrincipalName  $userupn
 $usercert.certificate >usercert.crt
 certutil -urlfetch -verify usercert.crt > certname.txt
 $result= get-content  .\certname.txt
-$result >
-
+$result |select-string  "failure", "error" ,$userupn
 ### --- 
 
 
