@@ -100,11 +100,33 @@ Write-host "total error in FAS" $FASlog.Message.count
 
 Add-PSSnapin Citrix.Authentication.FederatedAuthenticationService.V1
 
+
+
+
+
+### --- identify a kerberor id 9 error --- ###
+### --- https://support.citrix.com/s/article/CTX219849-fas-authentication-fails-with-an-error-the-username-or-password-is-incorrect?language=en_US
+### --- https://support.citrix.com/s/article/CTX560789-citrix-fas-incorrect-username-and-password?language=en_US
+### --- https://support.citrix.com/s/article/CTX217150-unable-to-login-using-the-fas-authentication-getting-stuck-on-please-wait-for-local-session-manager?language=en_US
+
+$StartTime=(Get-date).AddDays(3)
+$EndTime= ($StartTime).AddDays(3)
+$ComputerName =  ""
+$eventtime=(Get-WinEvent -computername $ComputerName -FilterHashtable @{LogName='System';StartTime=$StartTime;EndTime=$EndTime; ID=9}).TimeCreated
+
 $userid=""
 $user=Get-aduser -Identity $userid
 $userupn=$user.UserPrincipalName
 $CitrixFasAddress = (Get-FasServerForUser -UserPrincipalNames $userupn).Server
 Get-FasUserCertificate -UserPrincipalName  $userupn
+
+$usercert=Get-FasUserCertificate -UserPrincipalName  $userupn
+$usercert.certificate >usercert.crt
+certutil -urlfetch -verify usercert.crt > certname.txt
+$result= get-content  .\certname.txt
+$result >
+
+### --- 
 
 
 $FASserver=Get-FasServer|select @{name='name'; expression={$_.Address}} 
