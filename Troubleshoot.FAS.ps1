@@ -114,21 +114,6 @@ $EndTime= ($StartTime).AddDays(3)
 $ComputerName =  ""
 $eventtime=(Get-WinEvent -computername $ComputerName -FilterHashtable @{LogName='System';StartTime=$StartTime;EndTime=$EndTime; ID=9}).TimeCreated
 
-$userid=""
-$user=Get-aduser -Identity $userid
-$userupn=$user.UserPrincipalName
-
-
-$CitrixFasAddress = (Get-FasServerForUser -UserPrincipalNames $userupn).Server
-Get-FasUserCertificate -UserPrincipalName  $userupn
-
-$usercert=Get-FasUserCertificate -UserPrincipalName  $userupn
-$usercert.certificate >usercert.crt
-certutil -urlfetch -verify usercert.crt > certname.txt
-$result= get-content  .\certname.txt
-$result |select-string  "failure", "error" ,$userupn
-### --- 
-
 
 $FASserver=Get-FasServer|select @{name='name'; expression={$_.Address}} 
 $FASserver.name|Foreach-object {
@@ -136,3 +121,55 @@ $CitrixFasAddress= "$_"
 $fasusercert=get-fasusercertificate -MaximumRecordCount 9999
 $fasusercert|select UserPrincipalName, ExpiryDate, @{name='FASServer'; expression={$CitrixFasAddress}} |export-csv "fasUserCert.csv" -append 
 }
+
+
+
+
+$StartTime=(Get-date).AddDays(-1)
+$EndTime= ($StartTime).AddDays(1)
+$StartTime
+$EndTime
+
+
+
+$userid="trpky17"
+$user=Get-aduser -Identity $userid
+$userupn=$user.UserPrincipalName
+$userupn
+
+### --- in FAS 
+$CitrixFasAddress = (Get-FasServerForUser -UserPrincipalNames $userupn).Server
+$usercert=Get-FasUserCertificate -UserPrincipalName  $userupn
+$usercert.certificate >usercert.crt
+certutil -urlfetch -verify usercert.crt > certname.txt
+$result= get-content  .\certname.txt
+$result |select-string  "failure", "error" ,$userupn
+
+### --- collect all the FAS error/warning log.
+$VDA_FASErr=Get-WinEvent -computername $ComputerName -FilterHashtable @{LogName='Application';ProviderName='Citrix.Authentication.IdentityAssertion';StartTime=$StartTime;EndTime=$EndTime} |where-object{$_.level -ne 4}|Select-Object -First 10
+$VDA_FASErr
+$VDA_FASLogin=Get-WinEvent -computername $ComputerName -FilterHashtable @{LogName='Application';StartTime=$StartTime;EndTime=$EndTime;id=106} |Select-Object -First 1
+$VDA_FASLogin
+$Authtime=($FASLogin).TimeCreated
+
+
+### --- collect all the FAS error/warning log.
+$STF=""
+$STF_FASErr=Get-WinEvent -computername $STF -FilterHashtable @{LogName='Citrix Delivery Services';StartTime=$StartTime;EndTime=$EndTime} 
+$STF_FASErr|where-object {$_.Message -like "*$userid*"} |Select-Object -First 10
+$STF_FASErr
+
+
+
+### --- https://docs.citrix.com/en-us/federated-authentication-service/2212/config-manage/troubleshoot-logon.html
+### --- 101, https://support.citrix.com/s/article/CTX340100-error-identity-assertion-logon-failed-unrecognized-federated-authentication-service?language=en_US
+### --- 102, https://support.citrix.com/s/article/CTX564342-unable-to-start-desktop-with-fas-enabled-and-assert-upn-error-event-102-on-fas-server?language=en_US
+### --- 107, https://support.citrix.com/s/article/CTX255423-error-event-id-107-citrixauthenticationidentityassertion-user-loses-access-to-mapped-network-drives-after-they-reconnect-to-disconnected-session?language=en_US
+### ---  check VDA list and STF 
+
+$computername| Foreach-object {
+Invoke-Command -Computer $_ -ScriptBlock {
+Get-ItemProperty -Path "HKLM:SOFTWARE\Policies\Citrix\Authentication\UserCredentialService\Addresses"
+}
+}
+
