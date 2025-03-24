@@ -1,11 +1,8 @@
 $userid=""
 $VDA=""
 $ComputerName = Get-Content serverlist.txt
-$id =
-
-$user=Get-aduser -Identity $userid
-$userupn=$user.UserPrincipalName
-$userupn
+$id =""
+$ProviderName =""
 
 $StartTime=(Get-date).AddDays(-1)
 $EndTime= ($StartTime).AddDays(1)
@@ -20,13 +17,30 @@ $unknownSysErr
 $unknownAppErr 
 }
 
+$Alllog= $ComputerName | Foreach-object {
+Get-WinEvent -computername $_ -FilterHashtable @{LogName='System';ProviderName=$ProviderName;StartTime=$StartTime;EndTime=$EndTime;id=$id} |where-object{$_.level -ne 4}|Select-Object -First 100
+Get-WinEvent -computername $_ -FilterHashtable @{LogName='Application';ProviderName=$ProviderName;StartTime=$StartTime;EndTime=$EndTime;id=$id} |where-object{$_.level -ne 4}|Select-Object -First 100
+}
+$Alllog |select MachineName, LogName, Provide,id,TimeCreated,Message |format-table
+$Alllog.message
 
+
+
+### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- 
 <#
 ### --- https://docs.citrix.com/en-us/federated-authentication-service/2212/config-manage/troubleshoot-logon.html
 ### --- 101, https://support.citrix.com/s/article/CTX340100-error-identity-assertion-logon-failed-unrecognized-federated-authentication-service?language=en_US
 ### --- 102, https://support.citrix.com/s/article/CTX564342-unable-to-start-desktop-with-fas-enabled-and-assert-upn-error-event-102-on-fas-server?language=en_US
 ### --- 107, https://support.citrix.com/s/article/CTX255423-error-event-id-107-citrixauthenticationidentityassertion-user-loses-access-to-mapped-network-drives-after-they-reconnect-to-disconnected-session?language=en_US
 ### ---  check VDA list and STF 
+
+$user=Get-aduser -Identity $userid
+$userupn=$user.UserPrincipalName
+$userupn
+
+
+
+
 
 $computername| Foreach-object {
 Invoke-Command -Computer $_ -ScriptBlock {
