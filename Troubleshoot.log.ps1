@@ -1,68 +1,113 @@
-$ComputerName =  ""
-
-$AllCR= $ComputerName |ForEach {
-###----- Collect last changed KB/ SW -----# 
-(Get-HotFix -ComputerName  $_ | Sort-Object InstalledOn|select InstalledOn, CSName, HotfixID)[-1] |ft
-
-$SW=Get-CimInstance -ComputerName $_ -Class Win32_Product
-($SW |Sort-Object InstallDate |select InstallDate, Name , Vendor,  Version)[-1] |ft
-
-###----- Collect last reboot time. -----# 
-$SystemInfo =Get-CimInstance  -ComputerName $_ -Class win32_operatingsystem
-$SystemInfo |select lastbootuptime  |ft
-
-
-###--- select all non-started Citrix service --- ###
-
-}
-$AllCR
-
-
-#----- Collect all log from server group in last 1 days-----# 
-$StartTime=(Get-date).AddDays(-1)
-$EndTime= Get-date
-
-$Error=$ComputerName |foreach {
-Get-WinEvent -ComputerName $_ -FilterHashTable @{level=2;LogName="system";StartTime=$StartTime;EndTime=$EndTime}
-Get-WinEvent -ComputerName $_ -FilterHashTable @{level=2;LogName="application";StartTime=$StartTime;EndTime=$EndTime}
-}
-
-$Error |select timecreated, MachineName, Message |sort timecreated
-
-
-
-
-### --- --- ###
-
-
-
-#----- Collect all log from server group in last n days-----# 
+$userid=""
+$VDA=""
 $ComputerName = Get-Content serverlist.txt
-$computername =$env:COMPUTERNAME
-$n="4"
-$LogName="Application"
-$level = "2" 
-#level 2 = Error. , level 3 = Warining. 
+$id =
 
-$StartTime=(Get-date).AddDays(-$n)
-$EndTime= Get-date
-ForEach ($Server in $Computername) {
-$Log=Get-WinEvent -ComputerName $server -FilterHashTable @{level=$level;LogName=$LogName;StartTime=$StartTime;EndTime=$EndTime}
-$logoutput =$Log|select MachineName, LogName, Providername,id,TimeCreated,Message |format-table
+$user=Get-aduser -Identity $userid
+$userupn=$user.UserPrincipalName
+$userupn
+
+$StartTime=(Get-date).AddDays(-1)
+$EndTime= ($StartTime).AddDays(1)
+$StartTime
+$EndTime
+
+### --- Unknown error/warning log.
+$ComputerName | Foreach-object {
+$unknownSysErr=Get-WinEvent -computername $_ -FilterHashtable @{LogName='System';ProviderName=$ProviderName;StartTime=$StartTime;EndTime=$EndTime;id=$id} |where-object{$_.level -ne 4}|Select-Object -First 100
+$unknownAppErr=Get-WinEvent -computername $_ -FilterHashtable @{LogName='Application';ProviderName=$ProviderName;StartTime=$StartTime;EndTime=$EndTime;id=$id} |where-object{$_.level -ne 4}|Select-Object -First 100
+$unknownSysErr
+$unknownAppErr 
 }
-# $rpm= Get-eventlog -logname system -source rpm -after 1/20/2024 
 
+
+<#
+### --- https://docs.citrix.com/en-us/federated-authentication-service/2212/config-manage/troubleshoot-logon.html
+### --- 101, https://support.citrix.com/s/article/CTX340100-error-identity-assertion-logon-failed-unrecognized-federated-authentication-service?language=en_US
+### --- 102, https://support.citrix.com/s/article/CTX564342-unable-to-start-desktop-with-fas-enabled-and-assert-upn-error-event-102-on-fas-server?language=en_US
+### --- 107, https://support.citrix.com/s/article/CTX255423-error-event-id-107-citrixauthenticationidentityassertion-user-loses-access-to-mapped-network-drives-after-they-reconnect-to-disconnected-session?language=en_US
+### ---  check VDA list and STF 
+
+$computername| Foreach-object {
+Invoke-Command -Computer $_ -ScriptBlock {
+Get-ItemProperty -Path "HKLM:SOFTWARE\Policies\Citrix\Authentication\UserCredentialService\Addresses"
+}
+}
+
+
+### --- collect all the FAS error/warning log.
+$Err=Get-WinEvent -computername $ComputerName -FilterHashtable @{LogName='Application';ProviderName='Citrix.Authentication.IdentityAssertion';StartTime=$StartTime;EndTime=$EndTime} |where-object{$_.level -ne 4}|Select-Object -First 10
+$Err
+$FASLogin=Get-WinEvent -computername $ComputerName -FilterHashtable @{LogName='Application';StartTime=$StartTime;EndTime=$EndTime;id=106} |Select-Object -First 1
+$VDA_FASLogin
+$Authtime=($FASLogin).TimeCreated
+
+### --- collect all the FAS error/warning log.
+$Comptername | Foreach-object {
+$Alllog=Get-WinEvent -computername $_ -FilterHashtable @{LogName='Citrix Delivery Services';StartTime=$StartTime;EndTime=$EndTime}  |where-object{$_.level -ne 4}|Select-Object -First 10
+### --- $STF_FASErr|where-object {$_.Message -like "*$userid*"} |Select-Object -First 10
+$STF_Err
+}
+
+### --- collect all the FAS error/warning log.
+$CTXHostSTF.fqdn | Foreach-object {
+$STF_Err=Get-WinEvent -computername $_ -FilterHashtable @{LogName='Citrix Delivery Services';StartTime=$StartTime;EndTime=$EndTime}  |where-object{$_.level -ne 4}|Select-Object -First 10
+### --- $STF_FASErr|where-object {$_.Message -like "*$userid*"} |Select-Object -First 10
+$STF_Err
+}
+
+### --- All FAS related error/warning log.
+$VDA_FASErr=Get-WinEvent -computername $VDA -FilterHashtable @{LogName='Application';ProviderName='Citrix.Authentication.IdentityAssertion';StartTime=$StartTime;EndTime=$EndTime} |where-object{$_.level -ne 4}|Select-Object -First 10
+$VDA_FASErr
+
+### --- AD authentication required time --- ###
+$VDA_AuthErr=(Get-WinEvent -computername $VDA -FilterHashtable @{LogName='System';StartTime=$StartTime;EndTime=$EndTime; ID=9}).message
+$VDA_AuthErr
+
+
+
+### ---  101 check the FAS policy --- ### 
+$computername| Foreach-object {
+Invoke-Command -Computer $_ -ScriptBlock {
+Get-ItemProperty -Path "HKLM:SOFTWARE\Policies\Citrix\Authentication\UserCredentialService\Addresses"
+Get-ItemProperty -Path "HKLM:SOFTWARE\WOW6432Node\Policies\Citrix\Authentication\UserCredentialService\Addresses"
+(tnc opcs01028.corp.troweprice.net -port 80) |select  *
+}
+}
+
+### --- Run in FAS to see if the certification valid --- ### 
+$CitrixFasAddress = (Get-FasServerForUser -UserPrincipalNames $userupn).Server
+$usercert=Get-FasUserCertificate -UserPrincipalName  $userupn
+$usercert.certificate >usercert.crt
+certutil -urlfetch -verify usercert.crt > certname.txt
+$result= get-content  .\certname.txt
+$result |select-string  "failure", "error" ,$userupn
+
+
+### --- get the logon time. 
+$VDA_FASLogin=Get-WinEvent -computername $ComputerName -FilterHashtable @{LogName='Application';StartTime=$StartTime;EndTime=$EndTime;id=106} |Select-Object -First 1
+$VDA_FASLogin
+$Authtime=($FASLogin).TimeCreated
+
+
+
+### --- export all the FAS user certification --- ### 
+$FASserver=Get-FasServer|select @{name='name'; expression={$_.Address}} 
+$FASserver.name|Foreach-object {
+$CitrixFasAddress= "$_"
+$fasusercert=get-fasusercertificate -MaximumRecordCount 9999
+$fasusercert|select UserPrincipalName, ExpiryDate, @{name='FASServer'; expression={$CitrixFasAddress}} |export-csv "fasUserCert.csv" -append 
+}
+#>
 #----- Collect all log from server group in last n days-----# 
 
 ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- ### --- 
-
 #----- Get the RDS Logon in last 7 days-----# 
 $StartTime=(Get-date).AddDays(-7)
 $EndTime= Get-date
 $LogName="Security"
 $eventid="4624"
 $hostname=$env:computername
-
 
 $Winevent=Get-WinEvent -ComputerName $hostname -FilterHashTable @{LogName=$LogName;ID=$eventid;StartTime=$StartTime;EndTime=$EndTime} 
 $Events =$winevent | ?{$_.Message -match 'logon type:\s+(10)\s'}| ForEach-Object {
@@ -78,27 +123,4 @@ $Events =$winevent | ?{$_.Message -match 'logon type:\s+(10)\s'}| ForEach-Object
 }
 
 $Events | Format-Table -AutoSize
-
-################ Event Log ################
-################ Date ################  
-$StartTime=Get-Date -Year 2019 -Month 11 -Day 1 -Hour 00 -Minute 00
-$EndTime=Get-Date -Year 2020 -Month 11 -Day 1 -Hour 00 -Minute 00
-$hostname="vwts19bk-easd12"
-
-
-$LogName="Application"
-$FileName="Application"
-$GE2=Get-WinEvent   -ComputerName $hostname -FilterHashtable @{LogName=$LogName;Level='2';StartTime=$StartTime;EndTime=$EndTime}  -MaxEvents  100
-$GE2 | export-csv "$hostname-$FileName-2.csv"
-$GE3=Get-WinEvent   -ComputerName $hostname -FilterHashtable @{LogName=$LogName;Level='3';StartTime=$StartTime;EndTime=$EndTime}  -MaxEvents  100
-$GE3 | export-csv "$hostname-$FileName-3.csv"
-
-
-$LogName="Microsoft-Windows-RemoteDesktopServices-RdpCoreTS/Operational"
-$FileName="Microsoft-Windows-RemoteDesktopServices-RdpCoreTS"
-
-$GE2=Get-WinEvent   -ComputerName $hostname -FilterHashtable @{LogName=$LogName;Level='2';StartTime=$StartTime;EndTime=$EndTime}  -MaxEvents  100
-$GE2 | export-csv "$hostname-$FileName-2.csv"
-$GE3=Get-WinEvent   -ComputerName $hostname -FilterHashtable @{LogName=$LogName;Level='3';StartTime=$StartTime;EndTime=$EndTime}  -MaxEvents  100
-$GE3 | export-csv "$hostname-$FileName-3.csv"
 
