@@ -35,13 +35,12 @@ $STF_Err=Get-WinEvent -computername $_ -FilterHashtable @{LogName='Citrix Delive
 $STF_Err
 }
 
-
-
 ### ---  101 check the FAS policy --- ### 
 $computername| Foreach-object {
 Invoke-Command -Computer $_ -ScriptBlock {
 Get-ItemProperty -Path "HKLM:SOFTWARE\Policies\Citrix\Authentication\UserCredentialService\Addresses"
 Get-ItemProperty -Path "HKLM:SOFTWARE\WOW6432Node\Policies\Citrix\Authentication\UserCredentialService\Addresses"
+Get-ItemProperty  -Path "HKLM:SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services\" -name "fPromptForPassword"
 (tnc opcs01028.corp.troweprice.net -port 80) |select  *
 }
 }
