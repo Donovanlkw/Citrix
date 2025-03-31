@@ -1,4 +1,19 @@
 #################################################
+###======== Identify the tcp port opened by process ======###
+$processname= "telegraf"
+get-nettcpconnection |Where-Object {$_.OwningProcess -eq (get-process -name "$processname").Id}
+
+
+
+
+
+
+
+
+
+
+
+#################################################
 ###=============== Network performance ===============###
 $RESULT = import-csv PIP.txt -Header PIP
 $RESULT|
