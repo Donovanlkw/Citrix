@@ -51,3 +51,8 @@ foreach ($session in $sessions.value) {
     Write-Output "citrix_session_history,user=$username state=$state start_time=$start_time end_time=$end_time"
 }
 #############################
+
+# https://developer-docs.citrix.com/en-us/monitor-service-odata-api/data-access-protocol
+# https://developer-docs.citrix.com/en-us/citrix-cloud/accessing-monitor-service-data-citrix-cloud-external/accessing-monitor-service-data-citrix-cloud-external.html
+
+
