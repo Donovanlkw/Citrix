@@ -21,12 +21,16 @@ $headers = @{
 }
 
 #############################
+# $table= "Applications" 
+# $table= "Sessions"
+# $table= "Users"
+# $table= "Machine"
 
-$table= "Applications" 
-$table= "Sessions"
-$table= "Users"
-$table= "Machine"
-$results = Invoke-RestMethod "$api/$table" -Headers $headers -Verbose
+$table= "ConnectionFailureLogs"
+$filtering= "?$filter=(ModifiedDate ge 2025-04-01T00:00:00Z and ModifiedDate le  2025-04-02T00:00:00Z)"
+$URL = "$api/$table$filtering"
+
+$results = Invoke-RestMethod $URL -Headers $headers -Verbose
 Write-Host “Number of items returned in the first call : ”, $results.value.Count
 
 #############################
