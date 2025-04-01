@@ -3,7 +3,22 @@
 $ClientId = "your-client-id"
 $ClientSecret = "your-client-secret"
 $CustomerId = "your-customer-id"
-$api=
+$api = "https://{ApiGatewayEndpoint}"
+$endpoint = "$api/Applications"
+
+$bearer = "CWSAuth bearer=[token]"
+$headers = @{'Citrix-CustomerId'=$customerId;'Authorization'=$bearer}
+
+$results = Invoke-RestMethod $endpoint -Headers $headers -Verbose
+Write-Host “Number of items returned in the first call : ”, $results.value.Count
+
+while($results.'@odata.nextLink' -ne $null)
+{
+    $results = Invoke-RestMethod $results.'@odata.nextLink' -Headers $headers -Verbose
+    Write-Host "Number of items returned in next call : ", $results.value.Count
+}
+
+
 
 # Get Access Token
 $body = @{
