@@ -4,6 +4,19 @@ Asnp Citrix*
 Get-XDAuthentication –ProfileName “CloudAdmin”
 
 
+### --- Store and use Credentials in a Variable on-perm--- ###
+$cred = Get-Credential
+Set-Item -Path "HKCU:\Software\Citrix\Desktop" -Name "Credential" -Value $cred.UserName  # Store username
+Set-Item -Path "HKCU:\Software\Citrix\Desktop" -Name "Password" -Value $cred.GetNetworkCredential().Password  # Store password
+
+
+# Retrieve Citrix Cloud credentials in variable DaaS --- ###
+$citrixCredentials = Get-XDCredentials
+
+
+### --- Store and use Credentials in a Variable --- ###
+
+
 
 ###--- Citrix DaaS API ---###
 $CLIENT_ID=' '
@@ -20,13 +33,38 @@ $response = Invoke-WebRequest $tokenUrl -Method POST -Body @{
   client_secret = $CLIENT_SECRET
 }
 
+###--- 
+# Define client credentials and endpoint
+$clientId = "your-client-id"
+$clientSecret = "your-client-secret"
+$tenantId = "your-tenant-id"
+$authUrl = "https://oauth.cloud.citrix.com/token"
+
+# Prepare the request body
+$body = @{
+    grant_type    = "client_credentials"
+    client_id     = $clientId
+    client_secret = $clientSecret
+    scope         = "citrix.daas.api"
+}
+
+# Send POST request to get the token
+$response = Invoke-RestMethod -Uri $authUrl -Method Post -ContentType "application/x-www-form-urlencoded" -Body $body
+
+# Extract the access token from the response
+$accessToken = $response.access_token
+
+# Store the access token for subsequent requests
+$headers = @{
+    "Authorization" = "Bearer $accessToken"
+}
+
+
+###--- 
 
 
 
-
-
-
-
+###--- 
 
 
 
