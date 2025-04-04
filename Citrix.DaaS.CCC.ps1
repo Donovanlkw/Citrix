@@ -65,20 +65,39 @@ $computername|Foreach-object {
     }      
 }
 
+########################################
+### --- Download and commandline --- ###  
+Invoke-RestMethod -Uri "https://downloads.cloud.com/trowepriceas/connector/cwcconnector.exe" -Headers $headers -Method Get -OutFile  "$env:tmp\cwcconnector.exe"
+#Invoke-WebRequest -Uri "https://downloads.cloud.com/$CustomerId/connector/cwcconnector.exe"  -OutFile  "$env:tmp\cwcconnector.exe"
 
-### --- login to the Cloud connector and run below command with 
+# API Credentials
+$ClientId = "your-client-id"
+$ClientSecret = "your-client-secret"
+$CustomerId = "your-customer-id"
+$api = "https://api-us.cloud.com/monitorodata"
+$ResourceLocationId = 
 
+### create a Json file
+$file = "$env:tmp\cwcconnector_install_params.json"
+New-Item $file -force
+Add-content $file '{'
+Add-content $file '"customerName":"' -nonewline
+Add-content $file "$CustomerID"  -nonewline
+Add-content $file '",'
+Add-content $file '"clientId":' -nonewline
+Add-content $file "$ClientId" -nonewline
+Add-content $file '",'
+Add-content $file '"clientSecret":' -nonewline
+Add-content $file "$clientSecret"  -nonewline
+Add-content $file '",'
+Add-content $file '"resourceLocationId":' -nonewline
+Add-content $file "$ResourceLocationId"  -nonewline
+Add-content $file '",'
+Add-content $file '"acceptTermsOfService":' -nonewline
+Add-content $file "true" -nonewline
+Add-content $file '",'
+Add-Content $file '}'
+type $file
 
-{
-"customerName": "*CustomerID*",
-"clientId": "*ClientID*",
-"clientSecret": "*ClientSecret*",
-"resourceLocationId": "*ResourceLocationId*",
-"acceptTermsOfService": "true"
-}
-Invoke-WebRequest -Uri "https://downloads.cloud.com/$CustomerId/connector/cwcconnector.exe"  -OutFile  "$env:tmp\cwcconnector.exe"
-
- CWCConnector.exe /q /ParametersFilePath:$enc:tmp\cwcconnector_install_params.json
-
-
+$env:tmp/CWCConnector.exe /q /ParametersFilePath:$env:tmp\cwcconnector_install_params.json
 
