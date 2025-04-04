@@ -67,7 +67,7 @@ $computername|Foreach-object {
 
 ########################################
 ### --- Download and commandline --- ###  
-Invoke-RestMethod -Uri "https://downloads.cloud.com/trowepriceas/connector/cwcconnector.exe" -Headers $headers -Method Get -OutFile  "$env:tmp\cwcconnector.exe"
+Invoke-RestMethod -Uri "https://downloads.cloud.com/a/connector/cwcconnector.exe" -Headers $headers -Method Get -OutFile  "$env:tmp\cwcconnector.exe"
 #Invoke-WebRequest -Uri "https://downloads.cloud.com/$CustomerId/connector/cwcconnector.exe"  -OutFile  "$env:tmp\cwcconnector.exe"
 
 # API Credentials
