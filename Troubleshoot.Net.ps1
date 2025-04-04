@@ -58,3 +58,28 @@ Enable-NetAdapter -Name "Adapter Name"
 
 Get-NetAdapter  |Out-File -FilePath  $file -append -Encoding ascii
 
+
+### ---
+# https://devblogs.microsoft.com/scripting/packet-sniffing-with-powershell-getting-started/
+
+(gcm -Module NetEventPacketCapture | measure).count
+ gcm -Module NetEventPacketCapture | select name
+
+# Add a new network event session with 
+New-NetEventSession.
+#Add a network event provider to the session with 
+New-NetEventProvider.
+#Start the session with 
+Start-NetEventSession.
+#Get information about the session with Get-NetEventSession.
+#Stop the network event session with Stop-NetEventSession.
+#Remove the network event session with Remove-NetEventSession.
+
+
+
+New-NetEventSession -Name “Session1”
+
+
+
+
+
