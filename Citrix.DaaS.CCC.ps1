@@ -76,9 +76,7 @@ $computername|Foreach-object {
 "resourceLocationId": "*ResourceLocationId*",
 "acceptTermsOfService": "true"
 }
- 
-Invoke-WebRequest -Uri "https://downloads.cloud.com/trowepriceas/connector/cwcconnector.exe"  -OutFile  "$env:tmp\cwcconnector.exe"
-
+Invoke-WebRequest -Uri "https://downloads.cloud.com/$CustomerId/connector/cwcconnector.exe"  -OutFile  "$env:tmp\cwcconnector.exe"
 
  CWCConnector.exe /q /ParametersFilePath:$enc:tmp\cwcconnector_install_params.json
 
