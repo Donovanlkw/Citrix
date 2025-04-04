@@ -77,6 +77,10 @@ $CustomerId = "your-customer-id"
 $api = "https://api-us.cloud.com/monitorodata"
 $ResourceLocationId = 
 
+CWCConnector.exe /customerName:$CustomerId /clientId:$ClientId  /clientSecret:$ClientSecret /resourceLocationId:$ResourceLocationId /q
+
+
+<#
 ### create a Json file
 $file = "$env:tmp\cwcconnector_install_params.json"
 New-Item $file -force
@@ -100,7 +104,6 @@ Add-Content $file '}'
 type $file
 
 $env:tmp/CWCConnector.exe /q /ParametersFilePath:$env:tmp\cwcconnector_install_params.json
-
-
+#>
 
 # https://gist.github.com/ravager-dk/9b7af54e3311fbac3583fcad8e6d300e
