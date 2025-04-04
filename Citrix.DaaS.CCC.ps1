@@ -28,14 +28,6 @@ $computername|Foreach-object {
     }
 }
 
-<#
-$request = [System.Net.WebRequest]::Create("https://accounts.cloud.com")
-$request.Proxy = [System.Net.WebProxy]::new() #blank proxy
-$response = $request.GetResponse()
-$response
-#>
-
-
 ### --- Perform basic Certification installation.
 $computername|Foreach-object {
     Invoke-Command -Computer $_ -ScriptBlock {
@@ -66,44 +58,34 @@ $computername|Foreach-object {
 }
 
 ########################################
-### --- Download and commandline --- ###  
-Invoke-RestMethod -Uri "https://downloads.cloud.com/a/connector/cwcconnector.exe" -Headers $headers -Method Get -OutFile  "$env:tmp\cwcconnector.exe"
-#Invoke-WebRequest -Uri "https://downloads.cloud.com/$CustomerId/connector/cwcconnector.exe"  -OutFile  "$env:tmp\cwcconnector.exe"
-
 # API Credentials
 $ClientId = "your-client-id"
 $ClientSecret = "your-client-secret"
 $CustomerId = "your-customer-id"
 $api = "https://api-us.cloud.com/monitorodata"
-$ResourceLocationId = 
+$ResourceLocationId = ""
 
-CWCConnector.exe /customerName:$CustomerId /clientId:$ClientId  /clientSecret:$ClientSecret /resourceLocationId:$ResourceLocationId /q
+# Define the file path  
+$jsonFilePath = "$env:tmp\cwcconnector_install_params.json"
 
+# Define the JSON content  
+$jsonContent = @"
+{
+    "customerName": "$ClientId",
+    "clientId": "$CustomerId",
+    "clientSecret": "$ClientSecret",
+    "resourceLocationId": "$ResourceLocationId",
+    "acceptTermsOfService": "true"
+}
+"@  
+# Create the file and write content  
+$jsonContent | Out-File -FilePath $jsonFilePath -Encoding utf8  
 
-<#
-### create a Json file
-$file = "$env:tmp\cwcconnector_install_params.json"
-New-Item $file -force
-Add-content $file '{'
-Add-content $file '"customerName":"' -nonewline
-Add-content $file "$CustomerID"  -nonewline
-Add-content $file '",'
-Add-content $file '"clientId":' -nonewline
-Add-content $file "$ClientId" -nonewline
-Add-content $file '",'
-Add-content $file '"clientSecret":' -nonewline
-Add-content $file "$clientSecret"  -nonewline
-Add-content $file '",'
-Add-content $file '"resourceLocationId":' -nonewline
-Add-content $file "$ResourceLocationId"  -nonewline
-Add-content $file '",'
-Add-content $file '"acceptTermsOfService":' -nonewline
-Add-content $file "true" -nonewline
-Add-content $file '",'
-Add-Content $file '}'
-type $file
+### --- Download and Installation--- ###  
+Invoke-RestMethod -Uri "https://downloads.cloud.com/$CustomerId/connector/cwcconnector.exe" -Headers $headers -Method Get -OutFile  "$env:tmp\cwcconnector.exe"
+#Invoke-WebRequest -Uri "https://downloads.cloud.com/$CustomerId/connector/cwcconnector.exe"  -OutFile  "$env:tmp\cwcconnector.exe"
 
 $env:tmp/CWCConnector.exe /q /ParametersFilePath:$env:tmp\cwcconnector_install_params.json
-#>
 
+# CWCConnector.exe /customerName:$CustomerId /clientId:$ClientId  /clientSecret:$ClientSecret /resourceLocationId:$ResourceLocationId /q
 # https://gist.github.com/ravager-dk/9b7af54e3311fbac3583fcad8e6d300e
