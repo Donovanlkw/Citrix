@@ -101,3 +101,5 @@ type $file
 
 $env:tmp/CWCConnector.exe /q /ParametersFilePath:$env:tmp\cwcconnector_install_params.json
 
+
+# https://gist.github.com/ravager-dk/9b7af54e3311fbac3583fcad8e6d300e
