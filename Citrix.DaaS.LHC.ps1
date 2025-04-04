@@ -15,3 +15,17 @@ $CCClog |SELECT MachineName, Timecreated, Message
 ###--- https://docs.citrix.com/en-us/citrix-daas/manage-deployment/local-host-cache.html
 
 
+
+#----- Collect all log from server group in last 7 days-----# 
+$StartTime=(Get-date).AddDays(-1)
+$EndTime= Get-date
+$LogName="Application"
+$eventid="3504"
+$ProviderName="Citrix High Availability Service"
+
+
+$CCClog=$ComputerName|Foreach {
+Get-WinEvent -ComputerName $_ -FilterHashTable @{LogName=$LogName;ProviderName=$ProviderName;Id=$eventid;StartTime=$StartTime;EndTime=$EndTime}
+}
+
+
