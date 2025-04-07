@@ -1,5 +1,6 @@
 $region = "OM"
 $count= "1"
+$myCredential = Get-Credential
 
 ### --- Getting MC list  ---  ### 
 $MCList=Get-Brokercatalog -name *Provisioning*
@@ -10,12 +11,17 @@ $MC.name
 
 #Get-AcctIdentityPool -IdentityPoolName $MC |select IdentityPoolName,NamingScheme,NamingSchemeType, OU
 $IdentityPoolName = Get-AcctIdentityPool -IdentityPoolName $MC.name
-$newAccounts = New-AcctADAccount -IdentityPoolName $IdentityPoolName.IdentityPoolName -Count $count
+$newAccounts = New-AcctADAccount -IdentityPoolName $IdentityPoolName.IdentityPoolName -Count $count  -ADUserName  $myCredential.Username -ADPassword $myCredential.Password
+#$newAccounts = New-AcctADAccount -IdentityPoolName $IdentityPoolName.IdentityPoolName -Count $count
 $newAccounts.SuccessfulAccounts
+
+
 
 ### --- Creating Machine  ---  ### 
 $Prov=Get-provscheme |where-object {$_.IdentityPoolName -like $IdentityPoolName.IdentityPoolName}
 New-provVM -ADAccountName $newAccounts.SuccessfulAccounts -ProvisioningSchemeName  $Prov.ProvisioningSchemeName
+
+
 
 New-brokermachine -CatalogUid n -MachineName xxx
 $newAccounts.SuccessfulAccounts | ForEach-Object { 
