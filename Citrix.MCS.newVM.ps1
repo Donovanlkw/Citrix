@@ -1,6 +1,18 @@
 $region = "OM"
 $count= "1"
 $myCredential = Get-Credential
+$myCredential
+
+### --- check the VM is not enough --- ### 
+$stagingVM=Get-Brokermachine -DesktopGroupName *staging* -IsAssigned $False |select machinename, CatalogName |Group-Object -Property CatalogName
+$stagingVM |select Name, count
+$StagingVM |foreach{
+    $count= $_.count
+    $DG=$_.name
+    if ($count -lt "10"){
+    write-output $DG", required more VM, only" $count
+    }
+}
 
 ### --- Getting MC list  ---  ### 
 $MCList=Get-Brokercatalog -name *Provisioning*
