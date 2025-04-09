@@ -1,18 +1,29 @@
-$region = "OM"
-$count= "1"
 $myCredential = Get-Credential
-$myCredential
+
+### --- 
+$mapping = @(
+[PSCustomObject]@{StagingMC="ABC"; MC="DEF"},
+[PSCustomObject]@{StagingMC="ABC"; MC="DEF"}
+)
 
 ### --- check the VM is not enough --- ### 
-$stagingVM=Get-Brokermachine -DesktopGroupName *staging* -IsAssigned $False |select machinename, CatalogName |Group-Object -Property CatalogName
-$stagingVM |select Name, count
-$StagingVM |foreach{
+$stagingVM=Get-Brokermachine -DesktopGroupName "*Automation Staging - Standard*" -IsAssigned $False 
+#$stagingVM=Get-Brokermachine -DesktopGroupName *staging* -IsAssigned $False |Where-Object {$_.Desktopgroupname -eq "Standard" } |select machinename, CatalogName, Desktopgroupname |Group-Object -Property CatalogName, Desktopgroupname
+$stagingMC=$stagingVM |Group-Object -Property CatalogName | select Name, count 
+
+$RequireMC=$stagingMC |foreach{
     $count= $_.count
     $DG=$_.name
-    if ($count -lt "10"){
-    write-output $DG", required more VM, only" $count
+    if ($count -lt "5"){
+    write-output $DG
     }
 }
+$region = ($mapping| Where-Object { $_.dg -like $RequireMC}).MC
+
+$RequireMC
+$region
+$count
+#$region = "UK"
 
 ### --- Getting MC list  ---  ### 
 $MCList=Get-Brokercatalog -name *Provisioning*
