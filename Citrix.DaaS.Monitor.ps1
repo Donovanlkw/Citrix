@@ -88,3 +88,54 @@ $URL = "$api/Sessions?$filter=StartDate gt 2020-03-01 and LogonDuration gt 20000
 
 
 
+#
+
+$apiUrl = "https://api.cloud.com/nssdx/nitro/v2/stat/nstraffic"
+
+$headers = @{
+    "Authorization" = "Bearer $accessToken"
+    "Accept"        = "application/json"
+}
+
+$data = Invoke-RestMethod -Uri $apiUrl -Method Get -Headers $headers
+$data | ConvertTo-Json -Depth 5
+
+$data.nstraffic | Export-Csv -Path "nstraffic.csv" -NoTypeInformation
+
+https://api.cloud.com/nssdx/nitro/v1/config/lbvserver
+
+System stats:
+https://api.cloud.com/nssdx/nitro/v1/config/nsstats
+
+GSLB:
+https://api.cloud.com/nssdx/nitro/v1/stat/gslbsite
+
+https://<netscaler-ip-or-cloud-endpoint>/nitro/v1/<type>/<resource>
+
+
+Resource	URI Path	Description
+System Stats	/stat/ns	CPU, memory, packet rates, etc.
+Interface Stats	/stat/interface	Network interfaces
+Load Balancing VServers	/stat/lbvserver	LB virtual server stats
+Services	/stat/service	LB services
+Service Groups	/stat/servicegroup	Stats for grouped services
+GSLB Site	/stat/gslbsite	Global Server Load Balancing sites
+VPN (Gateway) Sessions	/stat/vpnvserver	NetScaler Gateway (VPN) sessions
+SSL	/stat/ssl	SSL handshake, throughput, etc.
+HTTP Profiles	/stat/httpprofile	HTTP optimization stats
+Application Firewall	/stat/appfw	App Firewall metrics
+
+LB Virtual Server	/config/lbvserver	Create/configure LB vServers
+Service	/config/service	Backend service definitions
+Service Group	/config/servicegroup	Group of backend services
+SSL Certificate Binding	/config/sslcertkey	SSL certificate management
+VPN Virtual Server	/config/vpnvserver	Gateway vServer configuration
+GSLB Site	/config/gslbsite	GSLB config
+Rewrite Policy	/config/rewritepolicy	HTTP rewrite logic
+Responder Policy	/config/responderpolicy	HTTP response logic
+App Firewall Profile	/config/appfwprofile	Web app firewall rules
+
+
+https://api.cloud.com/nssdx/nitro/v1/stat/<resource>
+
+
